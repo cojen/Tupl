@@ -111,7 +111,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/ja
 <pre class="snippet"><code class="language-java">Transaction txn = ...
 Cursor c = index.newCursor(txn);
 for (LockResult result = c.first(); c.key() != null; result = c.next()) {
-    if (shouldDiscard(c.value()) &amp;amp;&amp;amp; result == LockResult.ACQUIRED) {
+    if (shouldDiscard(c.value()) &amp;&amp; result == LockResult.ACQUIRED) {
         // Unlock record which doesn't belong in the transaction.
         txn.unlock();
         continue;

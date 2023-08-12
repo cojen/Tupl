@@ -23,16 +23,20 @@ import java.lang.invoke.MethodHandle;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Set;
 
+import org.cojen.tupl.DatabaseException;
 import org.cojen.tupl.Entry;
 import org.cojen.tupl.Scanner;
 import org.cojen.tupl.Sorter;
+import org.cojen.tupl.Table;
 import org.cojen.tupl.Transaction;
 
 /**
  * 
  *
  * @author Brian S O'Neill
+ * @see SortTranscoderMaker
  */
 final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
     // FIXME: Make configurable and/or "smart".
@@ -40,6 +44,11 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
 
     private ScanBatch<R> mFirstBatch, mLastBatch;
 
+    /**
+     * Sorts rows while still in binary format. When the amount of rows exceeds a threshold,
+     * rows are fed into a Sorter, which implements an external sort algorithm. A Transcoder is
+     * used to convert the binary format into something that's naturally ordered.
+     */
     @SuppressWarnings("unchecked")
     static <R> Scanner<R> sort(SortedQueryLauncher<R> launcher, Transaction txn, Object... args)
         throws IOException
@@ -47,7 +56,7 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
         var sorter = new RowSorter<R>();
 
         // Pass sorter as if it's a row, but it's actually a RowConsumer.
-        Scanner source = launcher.mSource.newScanner(txn, (R) sorter, args);
+        Scanner source = launcher.mSource.newScannerWith(txn, (R) sorter, args);
 
         int numRows = 0;
         for (Object c = source.row(); c != null; c = source.step(c)) {
@@ -73,6 +82,9 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
         return new ARS<>(launcher.mTable, rows, comparator);
     }
 
+    /**
+     * Sorts binary rows and writes the results to a remote endpoint.
+     */
     @SuppressWarnings("unchecked")
     static <R> void sortWrite(SortedQueryLauncher<R> launcher, RowWriter writer,
                               Transaction txn, Object... args)
@@ -84,7 +96,7 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
 
         try {
             // Pass ext as if it's a row, but it's actually a RowConsumer.
-            ext.transferAll(launcher.mSource.newScanner(txn, (R) ext, args));
+            ext.transferAll(launcher.mSource.newScannerWith(txn, (R) ext, args));
             sorted = ext.finishScan();
         } catch (Throwable e) {
             throw ext.failed(e);
@@ -108,6 +120,89 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
         } catch (Throwable e) {
             throw RowUtils.rethrow(e);
         }
+    }
+
+    /**
+     * Sorts materialized row objects. When the amount of rows exceeds a threshold, rows are
+     * fed into a Sorter, which implements an external sort algorithm. This adds overhead in
+     * the form of extra serialization, and so the binary sort is generally preferred.
+     */
+    static <R> Scanner<R> sort(Table<R> table, Scanner<R> source, Comparator<R> comparator,
+                               Set<String> projection, String orderBySpec)
+        throws IOException
+    {
+        var collection = new RowCollection<R>();
+
+        int numRows = 0;
+        for (R row = source.row(); row != null; row = source.step()) {
+            collection.add(row);
+            if (++numRows == EXTERNAL_THRESHOLD) {
+                Sorter sorter = newSorter(table);
+                if (sorter != null) {
+                    return finishExternal(table, source, comparator, projection, orderBySpec,
+                                          collection, sorter);
+                }
+            }
+        }
+
+        if (numRows == 0) {
+            return new ARS<>(comparator);
+        }
+
+        R[] rows = collection.toArray(numRows);
+        collection = null; // help GC
+
+        Arrays.parallelSort(rows, comparator);
+
+        return new ARS<R>(table, rows, comparator);
+    }
+
+    /**
+     * @return null if not supported
+     */
+    private static Sorter newSorter(Table<?> table) throws DatabaseException {
+        while (true) {
+            if (table instanceof MappedTable mapped) {
+                table = mapped.source();
+            } else if (table instanceof BaseTable base) {
+                return base.rowStore().mDatabase.newSorter();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private static <R> Scanner<R> finishExternal
+        (Table<R> table, Scanner<R> source, Comparator<R> comparator,
+         Set<String> projection, String orderBySpec,
+         RowCollection<R> collection, Sorter sorter)
+        throws IOException
+    {
+        SortRowCodec<R> codec = SortRowCodec.find(table.rowType(), projection, orderBySpec);
+
+        // Transfer the existing rows into the Sorter.
+
+        var kvPairs = new byte[1000][];
+        long numRows = collection.transferAndDiscard(sorter, codec, kvPairs);
+
+        // Feed the remaining rows into the Sorter.
+
+        int offset = 0;
+
+        // Note that the first row is obtained by calling step, to skip over the last row which
+        // was added to the collection.
+        for (R row = source.step(); row != null; row = source.step()) {
+            codec.encode(row, numRows++, kvPairs, offset);
+            offset += 2;
+            if (offset >= kvPairs.length) {
+                sorter.addBatch(kvPairs, 0, offset >> 1);
+                offset = 0;
+            }
+        }
+
+        sorter.addBatch(kvPairs, 0, offset >> 1);
+
+        return new SRS<>(sorter.finishScan(), codec, comparator);
     }
 
     @Override
@@ -171,7 +266,7 @@ final class RowSorter<R> extends ScanBatch<R> implements RowConsumer<R> {
             mComparator = comparator;
         }
 
-        ARS(BaseTable<R> table, R[] rows, Comparator<R> comparator) {
+        ARS(Table<R> table, R[] rows, Comparator<R> comparator) {
             super(table, rows);
             mComparator = comparator;
         }

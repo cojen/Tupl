@@ -55,13 +55,6 @@ public class RowInfoTest {
         }
 
         try {
-            RowInfo.find(Test2.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("no PrimaryKey"));
-        }
-
-        try {
             RowInfo.find(Test3.class);
             fail();
         } catch (IllegalArgumentException e) {
@@ -120,6 +113,28 @@ public class RowInfoTest {
             assertTrue(e.getMessage().contains("no mutator method"));
             assertTrue(e.getMessage().contains("cannot be unsigned"));
         }
+    }
+
+    @Test
+    public void lenient() throws Exception {
+        // Test2 doesn't have a primary key. RowInfo is lenient, but a table cannot be opened.
+
+        RowInfo info = RowInfo.find(Test2.class);
+
+        assertTrue(info.keyColumns.isEmpty());
+        assertEquals(1, info.valueColumns.size());
+        assertEquals(1, info.allColumns.size());
+
+        var db = Database.open(new DatabaseConfig());
+
+        try {
+            db.openTable(Test2.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("No primary key"));
+        }
+
+        db.close();
     }
 
     public interface Test1 {

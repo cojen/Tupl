@@ -57,7 +57,7 @@ class RedoEventPrinter implements RedoVisitor {
         };
 
         new RedoLog(crypto, baseFile, logId, 0, null)
-            .replay(new RedoEventPrinter(listener, EventType.DEBUG), null, null, null);
+            .replay(true, new RedoEventPrinter(listener, EventType.DEBUG), null, null, null);
     }
 
     private static final int MAX_VALUE = 1000;

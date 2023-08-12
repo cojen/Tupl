@@ -44,7 +44,7 @@ public final class DisjointUnionQueryLauncher<R> implements QueryLauncher<R> {
     }
 
     @Override
-    public Scanner<R> newScanner(Transaction txn, R row, Object... args) throws IOException {
+    public Scanner<R> newScannerWith(Transaction txn, R row, Object... args) throws IOException {
         return new ConcatScanner<R>(row) {
             private int mWhich;
 
@@ -54,7 +54,7 @@ public final class DisjointUnionQueryLauncher<R> implements QueryLauncher<R> {
                 if (which >= mLaunchers.length) {
                     return null;
                 } else {
-                    Scanner<R> next = mLaunchers[which].newScanner(txn, dst, args);
+                    Scanner<R> next = mLaunchers[which].newScannerWith(txn, dst, args);
                     mWhich = which + 1;
                     return next;
                 }
@@ -63,7 +63,7 @@ public final class DisjointUnionQueryLauncher<R> implements QueryLauncher<R> {
     }
 
     @Override
-    public Updater<R> newUpdater(Transaction txn, R row, Object... args) throws IOException {
+    public Updater<R> newUpdaterWith(Transaction txn, R row, Object... args) throws IOException {
         return new ConcatUpdater<R>(row) {
             private int mWhich;
 
@@ -73,7 +73,7 @@ public final class DisjointUnionQueryLauncher<R> implements QueryLauncher<R> {
                 if (which >= mLaunchers.length) {
                     return null;
                 } else {
-                    Updater<R> next = mLaunchers[which].newUpdater(txn, dst, args);
+                    Updater<R> next = mLaunchers[which].newUpdaterWith(txn, dst, args);
                     mWhich = which + 1;
                     return next;
                 }

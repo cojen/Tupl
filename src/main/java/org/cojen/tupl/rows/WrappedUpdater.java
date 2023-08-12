@@ -139,7 +139,7 @@ class WrappedUpdater<R> implements Updater<R> {
      * Implements a WrappedUpdater which commits the transaction when the updater finishes,
      * throws an exception, or is explicitly closed.
      */
-    public static final class EndCommit<R> extends WrappedUpdater<R> {
+    static final class EndCommit<R> extends WrappedUpdater<R> {
         EndCommit(Table<R> table, Transaction txn, Scanner<R> scanner) {
             super(table, txn, scanner);
         }

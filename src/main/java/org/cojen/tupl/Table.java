@@ -32,6 +32,7 @@ import org.cojen.tupl.diag.QueryPlan;
 import org.cojen.tupl.io.Utils;
 
 import org.cojen.tupl.rows.ComparatorMaker;
+import org.cojen.tupl.rows.MappedTable;
 import org.cojen.tupl.rows.PlainPredicateMaker;
 
 import org.cojen.tupl.rows.join.JoinTableMaker;
@@ -402,6 +403,17 @@ public interface Table<R> extends Closeable {
      */
     public default boolean delete(Transaction txn, R row) throws IOException {
         throw new UnmodifiableViewException();
+    }
+
+    /**
+     * Returns a view backed by this table, whose rows have been mapped to target rows. The
+     * returned table instance will throw a {@link ViewConstraintException} for operations
+     * against rows not supported by the mapper, and closing the table has no effect.
+     *
+     * @throws NullPointerException if the given mapper is null
+     */
+    public default <T> Table<T> map(Class<T> targetType, Mapper<R, T> mapper) {
+        return MappedTable.<R, T>map(this, targetType, mapper);
     }
 
     /**

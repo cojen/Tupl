@@ -515,60 +515,59 @@ public class RowInfo extends ColumnSet {
         PrimaryKey pk = rowType.getAnnotation(PrimaryKey.class);
 
         if (pk == null) {
-            messages.add("no PrimaryKey annotation is present");
-            return;
-        }
+            keyColumns = Collections.emptyMap();
+        } else {
+            String[] columnNames = pk.value();
 
-        String[] columnNames = pk.value();
-
-        if (columnNames.length == 0) {
-            messages.add(noColumns("primary key"));
-            return;
-        }
-
-        if (columnNames.length > 1) {
-            keyColumns = new LinkedHashMap<>(columnNames.length << 1);
-        }
-
-        for (String name : columnNames) {
-            int flags = 0;
-
-            ordered: {
-                if (name.startsWith("+")) {
-                    name = name.substring(1);
-                } else if (name.startsWith("-")) {
-                    name = name.substring(1);
-                    flags |= TYPE_DESCENDING;
-                } else {
-                    break ordered;
-                }
-                if (name.startsWith("!")) {
-                    name = name.substring(1);
-                    flags |= TYPE_NULL_LOW;
-                }
-            }
-
-            ColumnInfo info = allColumns.get(name);
-
-            if (info == null) {
-                messages.add(notExist("primary key", name));
+            if (columnNames.length == 0) {
+                messages.add(noColumns("primary key"));
                 return;
             }
 
-            if ((flags & TYPE_NULL_LOW) != 0 && !info.isNullable()) {
-                flags &= ~TYPE_NULL_LOW;
+            if (columnNames.length > 1) {
+                keyColumns = new LinkedHashMap<>(columnNames.length << 1);
             }
 
-            info.typeCode |= flags;
+            for (String name : columnNames) {
+                int flags = 0;
 
-            // Use intern'd string.
-            name = info.name;
+                ordered: {
+                    if (name.startsWith("+")) {
+                        name = name.substring(1);
+                    } else if (name.startsWith("-")) {
+                        name = name.substring(1);
+                        flags |= TYPE_DESCENDING;
+                    } else {
+                        break ordered;
+                    }
+                    if (name.startsWith("!")) {
+                        name = name.substring(1);
+                        flags |= TYPE_NULL_LOW;
+                    }
+                }
 
-            if (keyColumns == null) {
-                keyColumns = Map.of(name, info);
-            } else if (keyColumns.put(name, info) != null) {
-                messages.add(duplicate("primary key", name));
-                return;
+                ColumnInfo info = allColumns.get(name);
+
+                if (info == null) {
+                    messages.add(notExist("primary key", name));
+                    return;
+                }
+
+                if ((flags & TYPE_NULL_LOW) != 0 && !info.isNullable()) {
+                    flags &= ~TYPE_NULL_LOW;
+                }
+
+                info.typeCode |= flags;
+
+                // Use intern'd string.
+                name = info.name;
+
+                if (keyColumns == null) {
+                    keyColumns = Map.of(name, info);
+                } else if (keyColumns.put(name, info) != null) {
+                    messages.add(duplicate("primary key", name));
+                    return;
+                }
             }
         }
 

@@ -238,6 +238,10 @@ public class ColumnToArgFilter extends ColumnFilter {
         return new ColumnToArgFilter(column, mOperator, mArgNum);
     }
 
+    public ColumnToArgFilter withArgument(int argNum) {
+        return new ColumnToArgFilter(mColumn, mOperator, argNum);
+    }
+
     @Override
     public void appendTo(StringBuilder b) {
         super.appendTo(b);

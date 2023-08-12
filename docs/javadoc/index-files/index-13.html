@@ -83,6 +83,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Maps or remaps the file into main memory, up to the current file length.</div>
 </dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Table.html#map(java.lang.Class,org.cojen.tupl.Mapper)" class="member-name-link">map(Class&lt;T&gt;, Mapper&lt;R, T&gt;)</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Table.html" title="interface in org.cojen.tupl">Table</a></dt>
+<dd>
+<div class="block">Returns a view backed by this table, whose rows have been mapped to target rows.</div>
+</dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html#map(R,T)" class="member-name-link">map(R, T)</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html" title="interface in org.cojen.tupl">Mapper</a></dt>
+<dd>
+<div class="block">Maps source rows to target rows.</div>
+</dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/DatabaseConfig.html#mapDataFiles(boolean)" class="member-name-link">mapDataFiles(boolean)</a> - Method in class org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/DatabaseConfig.html" title="class in org.cojen.tupl">DatabaseConfig</a></dt>
 <dd>
 <div class="block">Enable memory mapping of the data files.</div>
@@ -94,6 +102,16 @@ loadScripts(document, 'script');</script>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/io/MappedPageArray.html" class="type-name-link" title="class in org.cojen.tupl.io">MappedPageArray</a> - Class in <a href="../org.cojen.tupl/org/cojen/tupl/io/package-summary.html">org.cojen.tupl.io</a></dt>
 <dd>
 <div class="block"><a href="../org.cojen.tupl/org/cojen/tupl/io/PageArray.html" title="class in org.cojen.tupl.io"><code>PageArray</code></a> implementation which accesses a fixed sized file, fully mapped to memory.</div>
+</dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html" class="type-name-link" title="interface in org.cojen.tupl">Mapper</a>&lt;<a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html" title="type parameter in Mapper">R</a>,<wbr><a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html" title="type parameter in Mapper">T</a>&gt; - Interface in <a href="../org.cojen.tupl/org/cojen/tupl/package-summary.html">org.cojen.tupl</a></dt>
+<dd>
+<div class="block">Interface for mapping source rows to target rows.</div>
+</dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Mapper.html#%3Cinit%3E(java.lang.String,java.lang.String,org.cojen.tupl.diag.QueryPlan)" class="member-name-link">Mapper(String, String, QueryPlan)</a> - Constructor for class org.cojen.tupl.diag.<a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Mapper.html" title="class in org.cojen.tupl.diag">QueryPlan.Mapper</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" class="type-name-link" title="interface in org.cojen.tupl">Mapper.Identity</a>&lt;<a href="../org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" title="type parameter in Mapper.Identity">R</a>,<wbr><a href="../org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" title="type parameter in Mapper.Identity">T</a>&gt; - Interface in <a href="../org.cojen.tupl/org/cojen/tupl/package-summary.html">org.cojen.tupl</a></dt>
+<dd>
+<div class="block">Defines a <a href="../org.cojen.tupl/org/cojen/tupl/Mapper.html" title="interface in org.cojen.tupl"><code>Mapper</code></a> which automatically defines inverse mapping functions.</div>
 </dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/Automatic.html#max()" class="member-name-link">max()</a> - Element in annotation interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Automatic.html" title="annotation interface in org.cojen.tupl">Automatic</a></dt>
 <dd>

@@ -104,7 +104,7 @@ public abstract class BaseTableIndex<R> extends BaseTable<R> {
     }
 
     @Override
-    protected Updater<R> newUpdater(Transaction txn, R row, String filter, Object... args)
+    protected Updater<R> newUpdaterWith(Transaction txn, R row, String filter, Object... args)
         throws IOException
     {
         // By default, this will throw an UnmodifiableViewException. See below.
@@ -112,7 +112,7 @@ public abstract class BaseTableIndex<R> extends BaseTable<R> {
     }
 
     @Override
-    protected Updater<R> newUpdater(Transaction txn, R row, ScanController<R> controller)
+    protected Updater<R> newUpdaterWith(Transaction txn, R row, ScanController<R> controller)
         throws IOException
     {
         throw new UnmodifiableViewException();
@@ -123,7 +123,7 @@ public abstract class BaseTableIndex<R> extends BaseTable<R> {
                                           BaseTable<R> primaryTable)
         throws IOException
     {
-        return primaryTable.newUpdater(txn, row, controller, this);
+        return primaryTable.newUpdaterWith(txn, row, controller, this);
     }
 
     @Override

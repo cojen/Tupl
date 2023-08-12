@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.cojen.maker.ClassMaker;
 import org.cojen.maker.Field;
@@ -153,6 +154,15 @@ public class TableMaker {
     protected static void markClean(final Variable rowVar, final RowGen rowGen,
                                     final Map<String, ColumnInfo> columns)
     {
+        markClean(rowVar, rowGen, columns.keySet());
+    }
+
+    /**
+     * Mark only the given columns as CLEAN. All others are UNSET.
+     */
+    protected static void markClean(final Variable rowVar, final RowGen rowGen,
+                                    final Set<String> columnNames)
+    {
         final int maxNum = rowGen.info.allColumns.size();
 
         int num = 0, mask = 0;
@@ -163,7 +173,7 @@ public class TableMaker {
             var baseCodecs = step == 0 ? rowGen.keyCodecs() : rowGen.valueCodecs();
 
             for (ColumnCodec codec : baseCodecs) {
-                if (columns.containsKey(codec.info.name)) {
+                if (columnNames.contains(codec.info.name)) {
                     mask |= RowGen.stateFieldMask(num, 0b01); // clean state
                 }
                 if ((++num & 0b1111) == 0 || num >= maxNum) {
@@ -196,28 +206,34 @@ public class TableMaker {
     protected void markValuesUnset(Variable rowVar) {
         if (isPrimaryTable()) {
             mRowGen.markNonPrimaryKeyColumnsUnset(rowVar);
-            return;
+        } else {
+            // If acting on an alternate key or secondary index, then the key/value columns are
+            // different.
+            markUnset(rowVar, mRowGen, mCodecGen.info.keyColumns);
         }
+    }
 
-        // If acting on an alternate key or secondary index, then the key/value columns are
-        // different.
-
-        final Map<String, ColumnInfo> keyColumns = mCodecGen.info.keyColumns;
-        final int maxNum = mRowInfo.allColumns.size();
+    /**
+     * Mark all columns except for the excluded ones as UNSET.
+     */
+    protected static void markUnset(final Variable rowVar, final RowGen rowGen,
+                                    final Map<String, ColumnInfo> exclude)
+    {
+        final int maxNum = rowGen.info.allColumns.size();
 
         int num = 0, mask = 0;
 
         for (int step = 0; step < 2; step++) {
             // Key columns are numbered before value columns. Add checks in two steps.
             // Note that the codecs are accessed, to match encoding order.
-            var baseCodecs = step == 0 ? mRowGen.keyCodecs() : mRowGen.valueCodecs();
+            var baseCodecs = step == 0 ? rowGen.keyCodecs() : rowGen.valueCodecs();
 
             for (ColumnCodec codec : baseCodecs) {
-                if (!keyColumns.containsKey(codec.info.name)) {
+                if (!exclude.containsKey(codec.info.name)) {
                     mask |= RowGen.stateFieldMask(num);
                 }
                 if ((++num & 0b1111) == 0 || num >= maxNum) {
-                    Field field = rowVar.field(mRowGen.stateField(num - 1));
+                    Field field = rowVar.field(rowGen.stateField(num - 1));
                     mask = ~mask;
                     if (mask == 0) {
                         field.set(mask);

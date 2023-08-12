@@ -85,9 +85,8 @@ class TableBasicsMaker {
 
             // Clear the column fields that refer to objects.
             for (ColumnInfo info : rowGen.info.allColumns.values()) {
-                Field field = rowVar.field(info.name);
                 if (!info.type.isPrimitive()) {
-                    field.set(null);
+                    rowVar.field(info.name).set(null);
                 }
             }
 

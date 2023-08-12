@@ -286,13 +286,8 @@ public class WriteRowMaker {
         }
     }
 
-    private static class Range {
-        Object start; // Variable or constant.
-        Variable length;
-
-        Range(Object start, Variable length) {
-            this.start = start;
-            this.length = length;
-        }
-    }
+    /**
+     * @param start Variable or constant
+     */
+    private record Range(Object start, Variable length) { }
 }

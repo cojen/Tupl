@@ -41,7 +41,7 @@ import org.cojen.tupl.core.LocalTransaction;
  * Transaction txn = ...
  * Cursor c = index.newCursor(txn);
  * for (LockResult result = c.first(); c.key() != null; result = c.next()) {
- *     if (shouldDiscard(c.value()) &amp;&amp; result == LockResult.ACQUIRED) {
+ *     if (shouldDiscard(c.value()) && result == LockResult.ACQUIRED) {
  *         // Unlock record which doesn't belong in the transaction.
  *         txn.unlock();
  *         continue;

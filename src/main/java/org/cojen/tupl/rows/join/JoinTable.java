@@ -92,7 +92,7 @@ public abstract class JoinTable<J> implements Table<J> {
     public final Scanner<J> newScannerWith(Transaction txn, J row, String query, Object... args)
         throws IOException
     {
-        return scannerQueryLauncher(query).newScanner(txn, row, args);
+        return scannerQueryLauncher(query).newScannerWith(txn, row, args);
     }
 
     @Override

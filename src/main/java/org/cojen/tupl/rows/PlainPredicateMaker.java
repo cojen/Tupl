@@ -56,11 +56,17 @@ public final class PlainPredicateMaker {
      * Returns a new predicate instance.
      */
     public static <R> Predicate<R> predicate(Class<R> rowType, String query, Object... args) {
-        var mh = (MethodHandle) cCache.obtain(new Pair<>(rowType, query), null);
         try {
-            return (Predicate<R>) mh.invokeExact(args);
+            return (Predicate<R>) predicateHandle(rowType, query).invokeExact(args);
         } catch (Throwable e) {
             throw RowUtils.rethrow(e);
         }
+    }
+
+    /**
+     * MethodHandle signature: Predicate xxx(Object... args)
+     */
+    static MethodHandle predicateHandle(Class<?> rowType, String query) {
+        return (MethodHandle) cCache.obtain(new Pair<>(rowType, query), null);
     }
 }

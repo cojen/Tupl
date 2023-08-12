@@ -39,20 +39,24 @@ import org.cojen.tupl.core.Pair;
  * @author Brian S O'Neill
  */
 public final class ComparatorMaker<R> {
-    private static final WeakCache<Pair<Class<?>, String>, Comparator<?>, Object> cCache;
+    private static final WeakCache<Pair<Class<?>, String>, Comparator<?>, OrderBy> cCache;
 
     static {
         cCache = new WeakCache<>() {
             @Override
-            public Comparator<?> newValue(Pair<Class<?>, String> key, Object unused) {
+            public Comparator<?> newValue(Pair<Class<?>, String> key, OrderBy orderBy) {
                 Class<?> rowType = key.a();
-                String spec = key.b();
-                var maker = new ComparatorMaker<>(rowType, spec);
-                String canonical = maker.canonicalSpec();
-                if (spec.equals(canonical)) {
-                    return maker.finish();
+                if (orderBy != null) {
+                    return new ComparatorMaker<>(rowType, orderBy).finish();
                 } else {
-                    return obtain(new Pair<>(rowType, canonical), null);
+                    String spec = key.b();
+                    var maker = new ComparatorMaker<>(rowType, spec);
+                    String canonical = maker.canonicalSpec();
+                    if (spec.equals(canonical)) {
+                        return maker.finish();
+                    } else {
+                        return obtain(new Pair<>(rowType, canonical), null);
+                    }
                 }
             }
         };
@@ -64,6 +68,16 @@ public final class ComparatorMaker<R> {
     @SuppressWarnings("unchecked")
     public static <R> Comparator<R> comparator(Class<R> rowType, String spec) {
         return (Comparator<R>) cCache.obtain(new Pair<>(rowType, spec), null);
+    }
+
+    /**
+     * Returns a new or cached comparator instance.
+     *
+     * @param spec must be orderBy.spec()
+     */
+    @SuppressWarnings("unchecked")
+    public static <R> Comparator<R> comparator(Class<R> rowType, OrderBy orderBy, String spec) {
+        return (Comparator<R>) cCache.obtain(new Pair<>(rowType, spec), orderBy);
     }
 
     private final Class<R> mRowType;
@@ -83,6 +97,12 @@ public final class ComparatorMaker<R> {
         mRowType = rowType;
         mRowInfo = RowInfo.find(rowType);
         mOrderBy = OrderBy.forSpec(mRowInfo, spec);
+    }
+
+    ComparatorMaker(Class<R> rowType, OrderBy orderBy) {
+        mRowType = rowType;
+        mRowInfo = RowInfo.find(rowType);
+        mOrderBy = orderBy;
     }
 
     String canonicalSpec() {

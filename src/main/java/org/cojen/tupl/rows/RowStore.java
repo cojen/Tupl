@@ -299,6 +299,10 @@ public final class RowStore {
         // Throws an exception if type is malformed.
         RowInfo info = RowInfo.find(type);
 
+        if (info.keyColumns.isEmpty()) {
+            throw new IllegalArgumentException("No primary key is defined: " + type.getName());
+        }
+
         boolean evolvable = type != Entry.class;
 
         BaseTable<R> table;

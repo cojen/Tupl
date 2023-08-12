@@ -870,7 +870,7 @@ final class LocalDatabase extends CoreDatabase {
                             var replayLog = new RedoLog(launcher, logId, redoPos);
 
                             replayLog.replay
-                                (printer, debugListener, EventType.RECOVERY_APPLY_REDO_LOG,
+                                (true, printer, debugListener, EventType.RECOVERY_APPLY_REDO_LOG,
                                  "Applying redo log: %1$d");
                         }
                     } else {
@@ -886,7 +886,7 @@ final class LocalDatabase extends CoreDatabase {
 
                         // As a side-effect, log id is set one higher than last file scanned.
                         TreeMap<Long, File> redoFiles = replayLog.replay
-                            (applier, mEventListener, EventType.RECOVERY_APPLY_REDO_LOG,
+                            (false, applier, mEventListener, EventType.RECOVERY_APPLY_REDO_LOG,
                              "Applying redo log: %1$d");
 
                         doCheckpoint |= !redoFiles.isEmpty();

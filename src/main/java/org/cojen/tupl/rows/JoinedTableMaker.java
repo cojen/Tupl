@@ -144,7 +144,8 @@ public class JoinedTableMaker extends TableMaker {
 
         // Override the method inherited from BaseTableIndex.
         MethodMaker mm = mClassMaker.addMethod
-            (Updater.class, "newUpdater", Transaction.class, Object.class, ScanController.class);
+            (Updater.class, "newUpdaterWith",
+             Transaction.class, Object.class, ScanController.class);
         mm.protected_();
         mm.return_(mm.invoke("newJoinedUpdater", mm.param(0), mm.param(1), mm.param(2),
                              mm.field("primaryTable")));

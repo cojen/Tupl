@@ -313,6 +313,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block"><a href="org.cojen.tupl/org/cojen/tupl/io/PageArray.html" title="class in org.cojen.tupl.io"><code>PageArray</code></a> implementation which accesses a fixed sized file, fully mapped to memory.</div>
 </div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Mapper.html" title="interface in org.cojen.tupl">Mapper</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Mapper.html" title="type parameter in Mapper">R</a>,<wbr><a href="org.cojen.tupl/org/cojen/tupl/Mapper.html" title="type parameter in Mapper">T</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Interface for mapping source rows to target rows.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" title="interface in org.cojen.tupl">Mapper.Identity</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" title="type parameter in Mapper.Identity">R</a>,<wbr><a href="org.cojen.tupl/org/cojen/tupl/Mapper.Identity.html" title="type parameter in Mapper.Identity">T</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Defines a <a href="org.cojen.tupl/org/cojen/tupl/Mapper.html" title="interface in org.cojen.tupl"><code>Mapper</code></a> which automatically defines inverse mapping functions.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/MessageReplicator.html" title="interface in org.cojen.tupl.repl">MessageReplicator</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Message-oriented replication interface, which is a bit easier to use than <a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.html" title="interface in org.cojen.tupl.repl"><code>StreamReplicator</code></a>.</div>
@@ -396,230 +404,234 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which loads at most one row from a table.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NaturalJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.NaturalJoin</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Mapper.html" title="class in org.cojen.tupl.diag">QueryPlan.Mapper</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Query plan node which applies custom row mapping and filtering.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NaturalJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.NaturalJoin</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which joins a target to a source based on a common set of columns.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NestedLoopsJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.NestedLoopsJoin</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NestedLoopsJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.NestedLoopsJoin</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which represents a nested loop join.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NestedLoopsJoin.Level.html" title="class in org.cojen.tupl.diag">QueryPlan.NestedLoopsJoin.Level</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.PrimaryJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.PrimaryJoin</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NestedLoopsJoin.Level.html" title="class in org.cojen.tupl.diag">QueryPlan.NestedLoopsJoin.Level</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.PrimaryJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.PrimaryJoin</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which joins index rows to primary rows.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.RangeScan.html" title="class in org.cojen.tupl.diag">QueryPlan.RangeScan</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.RangeScan.html" title="class in org.cojen.tupl.diag">QueryPlan.RangeScan</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which scans a range of rows from a table.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.RangeUnion.html" title="class in org.cojen.tupl.diag">QueryPlan.RangeUnion</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.RangeUnion.html" title="class in org.cojen.tupl.diag">QueryPlan.RangeUnion</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which represents a union set of plans, where each source plan is limited
  to a range, and all sources produce rows in the same order.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Scan.html" title="class in org.cojen.tupl.diag">QueryPlan.Scan</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Scan.html" title="class in org.cojen.tupl.diag">QueryPlan.Scan</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which scans a table.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Set.html" title="class in org.cojen.tupl.diag">QueryPlan.Set</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Set.html" title="class in org.cojen.tupl.diag">QueryPlan.Set</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which represents a set of plans.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Sort.html" title="class in org.cojen.tupl.diag">QueryPlan.Sort</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Sort.html" title="class in org.cojen.tupl.diag">QueryPlan.Sort</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which sorts the rows.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Table.html" title="class in org.cojen.tupl.diag">QueryPlan.Table</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Table.html" title="class in org.cojen.tupl.diag">QueryPlan.Table</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which accesses rows from a table.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Union.html" title="class in org.cojen.tupl.diag">QueryPlan.Union</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Union.html" title="class in org.cojen.tupl.diag">QueryPlan.Union</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Query plan node which represents a union set of plans.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/repl/RemoveMember.html" title="class in org.cojen.tupl.repl">RemoveMember</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/repl/RemoveMember.html" title="class in org.cojen.tupl.repl">RemoveMember</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Simple command-line tool to remove replication group members.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.html" title="interface in org.cojen.tupl.repl">Replicator</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.html" title="interface in org.cojen.tupl.repl">Replicator</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Defines common features available to all types of replicators.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Accessor.html" title="interface in org.cojen.tupl.repl">Replicator.Accessor</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Accessor.html" title="interface in org.cojen.tupl.repl">Replicator.Accessor</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Direct interface for accessing replication data, for a given term.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Reader.html" title="interface in org.cojen.tupl.repl">Replicator.Reader</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Reader.html" title="interface in org.cojen.tupl.repl">Replicator.Reader</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Direct interface for reading from a replicator, for a given term.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Writer.html" title="interface in org.cojen.tupl.repl">Replicator.Writer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/Replicator.Writer.html" title="interface in org.cojen.tupl.repl">Replicator.Writer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Direct interface for writing to a replicator, for a given term.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/repl/ReplicatorConfig.html" title="class in org.cojen.tupl.repl">ReplicatorConfig</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/repl/ReplicatorConfig.html" title="class in org.cojen.tupl.repl">ReplicatorConfig</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Configuration options used when opening a replicator.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="org.cojen.tupl/org/cojen/tupl/repl/Role.html" title="enum class in org.cojen.tupl.repl">Role</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab3">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="org.cojen.tupl/org/cojen/tupl/repl/Role.html" title="enum class in org.cojen.tupl.repl">Role</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">
 <div class="block">Supported membership roles.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Runner.html" title="class in org.cojen.tupl.util">Runner</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Runner.html" title="class in org.cojen.tupl.util">Runner</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implements an unbounded pool of daemon threads which automatically exit when idle.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Scanner.html" title="interface in org.cojen.tupl">Scanner</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Scanner.html" title="type parameter in Scanner">R</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Scanner.html" title="interface in org.cojen.tupl">Scanner</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Scanner.html" title="type parameter in Scanner">R</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Support for scanning through all rows in a table.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/SchemaChangeException.html" title="class in org.cojen.tupl">SchemaChangeException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/SchemaChangeException.html" title="class in org.cojen.tupl">SchemaChangeException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when attempting to alter a <a href="org.cojen.tupl/org/cojen/tupl/PrimaryKey.html" title="annotation interface in org.cojen.tupl"><code>primary key</code></a>, an <a href="org.cojen.tupl/org/cojen/tupl/AlternateKey.html" title="annotation interface in org.cojen.tupl"><code>alternate key</code></a>, or a <a href="org.cojen.tupl/org/cojen/tupl/SecondaryIndex.html" title="annotation interface in org.cojen.tupl"><code>secondary index</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="org.cojen.tupl/org/cojen/tupl/SecondaryIndex.html" title="annotation interface in org.cojen.tupl">SecondaryIndex</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="org.cojen.tupl/org/cojen/tupl/SecondaryIndex.html" title="annotation interface in org.cojen.tupl">SecondaryIndex</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Annotation which a defines secondary search index within a table.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Server.html" title="interface in org.cojen.tupl">Server</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Server.html" title="interface in org.cojen.tupl">Server</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Controls remote access into a database.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/tools/Shutdown.html" title="class in org.cojen.tupl.tools">Shutdown</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/tools/Shutdown.html" title="class in org.cojen.tupl.tools">Shutdown</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Opens a database and then calls <a href="org.cojen.tupl/org/cojen/tupl/Database.html#shutdown()"><code>shutdown</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Snapshot.html" title="interface in org.cojen.tupl">Snapshot</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Snapshot.html" title="interface in org.cojen.tupl">Snapshot</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Control object used to capture a database snapshot.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/SnapshotReceiver.html" title="interface in org.cojen.tupl.repl">SnapshotReceiver</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/SnapshotReceiver.html" title="interface in org.cojen.tupl.repl">SnapshotReceiver</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Receiver-side object for controlling the transmission of a database snapshot to a new group
  member.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/SnapshotSender.html" title="interface in org.cojen.tupl.repl">SnapshotSender</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/SnapshotSender.html" title="interface in org.cojen.tupl.repl">SnapshotSender</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Sender-side object for controlling the transmission of a database snapshot to a new group
  member.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Sorter.html" title="interface in org.cojen.tupl">Sorter</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Sorter.html" title="interface in org.cojen.tupl">Sorter</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Utility for sorting and filling up new indexes.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.html" title="interface in org.cojen.tupl.repl">StreamReplicator</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.html" title="interface in org.cojen.tupl.repl">StreamReplicator</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Low-level replication interface, which receives messages in a non-delineated stream.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.Reader.html" title="interface in org.cojen.tupl.repl">StreamReplicator.Reader</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.Reader.html" title="interface in org.cojen.tupl.repl">StreamReplicator.Reader</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface called by any group member for reading committed messages.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.Writer.html" title="interface in org.cojen.tupl.repl">StreamReplicator.Writer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/repl/StreamReplicator.Writer.html" title="interface in org.cojen.tupl.repl">StreamReplicator.Writer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface called by the group leader for proposing messages.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/io/StripedPageArray.html" title="class in org.cojen.tupl.io">StripedPageArray</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/io/StripedPageArray.html" title="class in org.cojen.tupl.io">StripedPageArray</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block"><a href="org.cojen.tupl/org/cojen/tupl/io/PageArray.html" title="class in org.cojen.tupl.io"><code>PageArray</code></a> implementation which stripes pages in a <a href="http://en.wikipedia.org/wiki/Raid_0#RAID_0">RAID 0</a> fashion.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Table.html" title="interface in org.cojen.tupl">Table</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Table.html" title="type parameter in Table">R</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Table.html" title="interface in org.cojen.tupl">Table</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Table.html" title="type parameter in Table">R</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Defines a relational collection of persistent rows.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Transaction.html" title="interface in org.cojen.tupl">Transaction</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Transaction.html" title="interface in org.cojen.tupl">Transaction</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Defines a logical unit of work.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Transformer.html" title="interface in org.cojen.tupl">Transformer</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Transformer.html" title="interface in org.cojen.tupl">Transformer</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Interface which supports filtering and transforming the entries within a <a href="org.cojen.tupl/org/cojen/tupl/View.html" title="interface in org.cojen.tupl"><code>View</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UniqueConstraintException.html" title="class in org.cojen.tupl">UniqueConstraintException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UniqueConstraintException.html" title="class in org.cojen.tupl">UniqueConstraintException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when a row store operation would create a conflicting key.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnmodifiableReplicaException.html" title="class in org.cojen.tupl">UnmodifiableReplicaException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnmodifiableReplicaException.html" title="class in org.cojen.tupl">UnmodifiableReplicaException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when attempting to make changes to a read-only replica.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnmodifiableViewException.html" title="class in org.cojen.tupl">UnmodifiableViewException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnmodifiableViewException.html" title="class in org.cojen.tupl">UnmodifiableViewException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when attempting to make a change to an index or view which doesn't
  permit modifications.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnpositionedCursorException.html" title="class in org.cojen.tupl">UnpositionedCursorException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnpositionedCursorException.html" title="class in org.cojen.tupl">UnpositionedCursorException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Exception thrown when acting on a <a href="org.cojen.tupl/org/cojen/tupl/Cursor.html" title="interface in org.cojen.tupl"><code>Cursor</code></a> which doesn't have a position defined.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnsetColumnException.html" title="class in org.cojen.tupl">UnsetColumnException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/UnsetColumnException.html" title="class in org.cojen.tupl">UnsetColumnException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when attempting to read a row column which doesn't have anything assigned to it.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="org.cojen.tupl/org/cojen/tupl/Unsigned.html" title="annotation interface in org.cojen.tupl">Unsigned</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="org.cojen.tupl/org/cojen/tupl/Unsigned.html" title="annotation interface in org.cojen.tupl">Unsigned</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab6">
 <div class="block">Annotation which indicates that a primitive column type be treated as an unsigned type.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Updater.html" title="interface in org.cojen.tupl">Updater</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Updater.html" title="type parameter in Updater">R</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/Updater.html" title="interface in org.cojen.tupl">Updater</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/Updater.html" title="type parameter in Updater">R</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Support for scanning through all rows in a table, updating them along the way.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/io/Utils.html" title="class in org.cojen.tupl.io">Utils</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/io/Utils.html" title="class in org.cojen.tupl.io">Utils</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Generic data and I/O utility methods.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/ValueAccessor.html" title="interface in org.cojen.tupl">ValueAccessor</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/ValueAccessor.html" title="interface in org.cojen.tupl">ValueAccessor</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Accesses database values without requiring that they be fully loaded or stored in a single
  operation.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/VerificationObserver.html" title="class in org.cojen.tupl.diag">VerificationObserver</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/diag/VerificationObserver.html" title="class in org.cojen.tupl.diag">VerificationObserver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Index verification observer.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/tools/Verify.html" title="class in org.cojen.tupl.tools">Verify</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/tools/Verify.html" title="class in org.cojen.tupl.tools">Verify</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Simple database verification utility.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/View.html" title="interface in org.cojen.tupl">View</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.cojen.tupl/org/cojen/tupl/View.html" title="interface in org.cojen.tupl">View</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Mapping of keys to values, in no particular order.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/ViewConstraintException.html" title="class in org.cojen.tupl">ViewConstraintException</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/ViewConstraintException.html" title="class in org.cojen.tupl">ViewConstraintException</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when attempting to perform an illegal view alteration.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.html" title="class in org.cojen.tupl.util">WeakPool</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.html" title="type parameter in WeakPool">B</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.html" title="class in org.cojen.tupl.util">WeakPool</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.html" title="type parameter in WeakPool">B</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Utility for sharing a small set of poolable objects (like buffers) which are weakly
  referenced.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.Entry.html" title="class in org.cojen.tupl.util">WeakPool.Entry</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.Entry.html" title="type parameter in WeakPool.Entry">B</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.Entry.html" title="class in org.cojen.tupl.util">WeakPool.Entry</a>&lt;<a href="org.cojen.tupl/org/cojen/tupl/util/WeakPool.Entry.html" title="type parameter in WeakPool.Entry">B</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">An entry which weakly references a pooled object.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WideLatch.html" title="class in org.cojen.tupl.util">WideLatch</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WideLatch.html" title="class in org.cojen.tupl.util">WideLatch</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Non-reentrant latch implementation which supports highly concurrent shared requests, but
  exclusive requests are more expensive.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Worker.html" title="class in org.cojen.tupl.util">Worker</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Worker.html" title="class in org.cojen.tupl.util">Worker</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Simple task worker which has at most one background thread, and is expected to have only one
  thread enqueuing tasks.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Worker.Task.html" title="class in org.cojen.tupl.util">Worker.Task</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/Worker.Task.html" title="class in org.cojen.tupl.util">Worker.Task</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">One-shot <a href="org.cojen.tupl/org/cojen/tupl/util/Worker.html" title="class in org.cojen.tupl.util">worker</a> task instance.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WorkerGroup.html" title="class in org.cojen.tupl.util">WorkerGroup</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.cojen.tupl/org/cojen/tupl/util/WorkerGroup.html" title="class in org.cojen.tupl.util">WorkerGroup</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A group of <a href="org.cojen.tupl/org/cojen/tupl/util/Worker.html" title="class in org.cojen.tupl.util">workers</a> for running tasks.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/WriteFailureException.html" title="class in org.cojen.tupl">WriteFailureException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.cojen.tupl/org/cojen/tupl/WriteFailureException.html" title="class in org.cojen.tupl">WriteFailureException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Thrown when writing to the underlying storage device failed.</div>
 </div>
 </div>

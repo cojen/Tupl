@@ -110,7 +110,7 @@ public final class OrderBy extends LinkedHashMap<String, OrderBy.Rule> {
         return b.toString().intern();
     }
 
-    static String[] splitSpec(String spec) {
+    public static String[] splitSpec(String spec) {
         int end = nextSubSpec(spec, 0);
         if (end < 0) {
             return new String[] {spec};

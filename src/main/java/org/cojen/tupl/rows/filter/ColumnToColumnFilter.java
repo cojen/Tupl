@@ -24,6 +24,7 @@ import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 
 import org.cojen.tupl.rows.ColumnInfo;
+import org.cojen.tupl.rows.ConvertUtils;
 
 /**
  * 
@@ -168,6 +169,17 @@ public final class ColumnToColumnFilter extends ColumnFilter {
     @Override
     ColumnToColumnFilter withOperator(int op) {
         return new ColumnToColumnFilter(mColumn, op, mOtherColumn, mCommon);
+    }
+
+    /**
+     * @return null if a common type doesn't exist
+     */
+    public ColumnToColumnFilter tryWithColumns(ColumnInfo column, ColumnInfo other) {
+        ColumnInfo common = ConvertUtils.commonType(column, other, mOperator);
+        if (common == null) {
+            return null;
+        }
+        return new ColumnToColumnFilter(column, mOperator, other, common);
     }
 
     @Override
