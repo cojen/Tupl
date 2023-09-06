@@ -29,7 +29,10 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import org.cojen.tupl.*;
+
 import org.cojen.tupl.diag.QueryPlan;
+
+import org.cojen.tupl.rows.RowInfo;
 
 /**
  * Tests all possible well-specified unfiltered 3-way joins and checks the results. Anti-joins
@@ -239,7 +242,7 @@ public class PermutationsTest {
         var b = new StringBuilder().append("select company.companyId as c_id, company.name as c_name, department.departmentId as d_id, department.name as d_name, department.companyId as d_companyId, employee.employeeId as e_id, employee.lastName as e_lastName, employee.country as e_country, employee.departmentId as e_departmentId from ");
 
         JoinSpec spec = JoinSpec.parse
-            (JoinRowInfo.find(EmployeeJoinDepartmentJoinCompany.class), specStr, cDb);
+            (RowInfo.find(EmployeeJoinDepartmentJoinCompany.class), specStr, cDb);
 
 
         var parts = new HashSet<String>();

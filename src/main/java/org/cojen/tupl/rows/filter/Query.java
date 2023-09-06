@@ -17,6 +17,7 @@
 
 package org.cojen.tupl.rows.filter;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -27,14 +28,31 @@ import org.cojen.tupl.rows.OrderBy;
 /**
  * Describes a fully parsed query specification.
  *
- * @param projection null if projection is all columns
- * @param orderBy can be null
+ * @param projection can be null if projection is all columns
+ * @param orderBy can be null if none; all orderBy columns must also be in the projection
  * @param filter never null
  * @see Parser#parseQuery
  */
 public record Query(Map<String, ColumnInfo> projection, OrderBy orderBy, RowFilter filter) {
     public Query withOrderBy(OrderBy ob) {
-        return Objects.equals(orderBy, ob) ? this : new Query(projection, ob, filter);
+        if (Objects.equals(orderBy, ob)) {
+            return this;
+        }
+
+        if (ob == null || projection == null || projection.keySet().containsAll(ob.keySet())) {
+            return new Query(projection, ob, filter);
+        }
+
+        // Expand the projection to include the additional orderBy columns.
+
+        var proj = new LinkedHashMap<>(projection);
+
+        for (OrderBy.Rule rule : ob.values()) {
+            ColumnInfo column = rule.column();
+            proj.putIfAbsent(column.name, column);
+        }
+
+        return new Query(proj, ob, filter);
     }
 
     public Query withFilter(RowFilter rf) {
@@ -43,6 +61,21 @@ public record Query(Map<String, ColumnInfo> projection, OrderBy orderBy, RowFilt
 
     public Query reduce() {
         return withFilter(filter.reduce());
+    }
+
+    /**
+     * Returns the column order by rule, or null if not specified.
+     */
+    public OrderBy.Rule orderByRule(String name) {
+        return orderBy == null ? null : orderBy.get(name);
+    }
+
+    /**
+     * Returns true if effective query is "{*}".
+     */
+    public boolean isFullScan() {
+        return projection == null && (orderBy == null || orderBy.isEmpty())
+            && filter == TrueFilter.THE;
     }
 
     @Override

@@ -262,8 +262,9 @@ class BTree extends Tree implements View, Index {
             int lowPos = node.searchVecStart();
             int highPos = node.searchVecEnd();
 
-            int lowMatch = 0;
-            int highMatch = 0;
+            // TODO: Using this feature reduces performance for small keys. Is the potential
+            // benefit for large keys worth it?
+            //int lowMatch = 0, highMatch = 0;
 
             outer: while (lowPos <= highPos) {
                 int midPos = ((lowPos + highPos) >> 1) & ~1;
@@ -280,31 +281,27 @@ class BTree extends Tree implements View, Index {
 
                         if ((header & Node.ENTRY_FRAGMENTED) != 0) {
                             // Note: An optimized version wouldn't need to copy the whole key.
-                            byte[] compareKey = mDatabase.reconstructKey
-                                (page, compareLoc, compareLen);
+                            byte[] compareKey = mDatabase
+                                .reconstructKey(page, compareLoc, compareLen);
 
                             int fullCompareLen = compareKey.length;
-
                             int minLen = Math.min(fullCompareLen, keyLen);
-                            i = Math.min(lowMatch, highMatch);
-                            for (; i<minLen; i++) {
-                                byte cb = compareKey[i];
-                                byte kb = key[i];
-                                if (cb != kb) {
-                                    if ((cb & 0xff) < (kb & 0xff)) {
-                                        lowPos = midPos + 2;
-                                        lowMatch = i;
-                                    } else {
-                                        highPos = midPos - 2;
-                                        highMatch = i;
-                                    }
-                                    continue outer;
+                            int cmp = compareUnsigned(compareKey, 0, minLen, key, 0, minLen);
+
+                            if (cmp != 0) {
+                                if (cmp < 0) {
+                                    lowPos = midPos + 2;
+                                    //lowMatch = mismatch & ~7;
+                                } else {
+                                    highPos = midPos - 2;
+                                    //highMatch = mismatch & ~7;
                                 }
+                                continue outer;
                             }
 
                             // Update compareLen and compareLoc for use by the code after the
                             // current scope. The compareLoc is completely bogus at this point,
-                            // but is corrected when the value is retrieved below.
+                            // but it's corrected when the value is retrieved below.
                             compareLoc += compareLen - fullCompareLen;
                             compareLen = fullCompareLen;
 
@@ -313,17 +310,35 @@ class BTree extends Tree implements View, Index {
                     }
 
                     int minLen = Math.min(compareLen, keyLen);
-                    i = Math.min(lowMatch, highMatch);
-                    for (; i<minLen; i++) {
+                    int minLen8 = minLen & ~7;
+                    i = 0;//Math.min(lowMatch, highMatch);
+
+                    for (; i < minLen8; i += 8) {
+                        long cv = p_longGetBE(page, compareLoc + i);
+                        long kv = Utils.decodeLongBE(key, i);
+                        int cmp = Long.compareUnsigned(cv, kv);
+                        if (cmp != 0) {
+                            if (cmp < 0) {
+                                lowPos = midPos + 2;
+                                //lowMatch = i;
+                            } else {
+                                highPos = midPos - 2;
+                                //highMatch = i;
+                            }
+                            continue outer;
+                        }
+                    }
+
+                    for (; i < minLen; i++) {
                         byte cb = p_byteGet(page, compareLoc + i);
                         byte kb = key[i];
                         if (cb != kb) {
                             if ((cb & 0xff) < (kb & 0xff)) {
                                 lowPos = midPos + 2;
-                                lowMatch = i;
+                                //lowMatch = i;
                             } else {
                                 highPos = midPos - 2;
-                                highMatch = i;
+                                //highMatch = i;
                             }
                             continue outer;
                         }
@@ -332,10 +347,10 @@ class BTree extends Tree implements View, Index {
 
                 if (compareLen < keyLen) {
                     lowPos = midPos + 2;
-                    lowMatch = i;
+                    //lowMatch = i & ~7;
                 } else if (compareLen > keyLen) {
                     highPos = midPos - 2;
-                    highMatch = i;
+                    //highMatch = i & ~7;
                 } else {
                     if ((local != null && local.lockMode() != LockMode.READ_COMMITTED) ||
                         mLockManager.isAvailable

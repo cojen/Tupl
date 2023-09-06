@@ -24,8 +24,6 @@ import java.math.BigInteger;
 
 import java.util.Map;
 
-import org.cojen.tupl.rows.join.JoinColumnInfo;
-
 /**
  * 
  *
@@ -59,19 +57,19 @@ public class ColumnInfo implements Cloneable {
       0b...10011: float128
 
       0b...10100: char16 (char)
-      0b...10101: char32
+      0b...10101: unused
       0b...10110: unused
-      0b...10111: char8
+      0b...10111: unused
 
       0b...11000: utf8 string
-      0b...11001: unused (ISO-LATIN1 string?)
-      0b...11010: unused (UTF-16 string?)
-      0b...11011: unused (UTF-32 string?)
+      0b...11001: unused
+      0b...11010: unused
+      0b...11011: unused
 
       0b...11100: big integer
       0b...11101: big decimal
-      0b...11110: document
-      0b...11111: object
+      0b...11110: unused (document?)
+      0b...11111: join to another row
 
       Modifiers:
 
@@ -97,7 +95,7 @@ public class ColumnInfo implements Cloneable {
         TYPE_UTF8        = 0b11000,
         TYPE_BIG_INTEGER = 0b11100,
         TYPE_BIG_DECIMAL = 0b11101,
-        TYPE_OBJECT      = 0b11111;
+        TYPE_JOIN        = 0b11111;
 
     public static final int
         TYPE_NULL_LOW    = 0b1000_00000,
@@ -310,29 +308,36 @@ public class ColumnInfo implements Cloneable {
         };
     }
 
-    /**
-     * @see JoinColumnInfo
-     */
     public boolean isScalarType() {
-        return true;
+        return typeCode != TYPE_JOIN;
     }
 
     /**
      * @return null if not found
-     * @see JoinColumnInfo
      */
     public ColumnInfo subColumn(String name) {
-        return null;
+        return isScalarType() ? null : RowInfo.find(type).allColumns.get(name);
     }
 
     /**
      * Recursively puts all the scalar columns into the given map with their fully qualified
      * names.
-     *
-     * @see JoinColumnInfo
      */
-    public void putScalarColumns(Map<String, ColumnInfo> dst) {
-        dst.put(name, this);
+    public void gatherScalarColumns(Map<String, ColumnInfo> dst) {
+        gatherScalarColumns(name, dst);
+    }
+
+    private void gatherScalarColumns(String path, Map<String, ColumnInfo> dst) {
+        if (isScalarType()) {
+            dst.put(path, this);
+        } else {
+            for (ColumnInfo info : RowInfo.find(type).allColumns.values()) {
+                String newPath = path + '.' + info.name;
+                info = info.copy();
+                info.name = newPath;
+                info.gatherScalarColumns(newPath, dst);
+            }
+        }
     }
 
     /**

@@ -64,6 +64,11 @@ final class PrimaryTable<R> implements Table<R> {
     }
 
     @Override
+    public void cleanRow(R row) {
+        mSource.cleanRow(row);
+    }
+
+    @Override
     public void copyRow(R from, R to) {
         mSource.copyRow(from, to);
     }

@@ -1229,6 +1229,7 @@ public final class RowStore {
                 // Check if the schema has changed.
                 schemaVersion = decodeIntLE(current.value(), 0);
 
+                // FIXME: Sometimes currentInfo is null, which causes NPE in checkSchema.
                 RowInfo currentInfo = decodeExisting
                     (txn, info.name, indexId, current.value(), schemaVersion);
 

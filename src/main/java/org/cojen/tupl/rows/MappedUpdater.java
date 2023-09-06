@@ -73,7 +73,7 @@ public final class MappedUpdater<S, T> extends MappedScanner<S, T> implements Up
         T mappedTargetRow = mMapper.map(sourceRow, row);
 
         if (mappedTargetRow != null) {
-            mMappedTable.markAllUndirty(mappedTargetRow);
+            mMappedTable.cleanRow(mappedTargetRow);
             mTargetRow = mappedTargetRow;
             return mappedTargetRow;
         } else {

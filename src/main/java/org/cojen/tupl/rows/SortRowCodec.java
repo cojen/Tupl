@@ -182,9 +182,13 @@ public abstract class SortRowCodec<R> implements RowDecoder<R> {
      */
     private static Variable encode(Variable rowVar, Variable rowNumVar, ColumnCodec[] codecs) {
         MethodMaker mm = rowVar.methodMaker();
-        codecs = ColumnCodec.bind(codecs, mm);
-
         int numColumns = codecs.length;
+
+        if (numColumns == 0) {
+            return mm.var(RowUtils.class).field("EMPTY_BYTES");
+        }
+
+        codecs = ColumnCodec.bind(codecs, mm);
 
         int minSize = 0;
 

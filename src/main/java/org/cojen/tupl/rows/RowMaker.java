@@ -39,8 +39,6 @@ import org.cojen.tupl.UnsetColumnException;
 
 import org.cojen.tupl.rows.codec.ColumnCodec;
 
-import static org.cojen.tupl.rows.ColumnInfo.*;
-
 /**
  * Makes code for the main Row implementation class.
  *
@@ -401,31 +399,7 @@ public class RowMaker {
         clean.here();
 
         bob.invoke("append", info.name).invoke("append", '=');
-        Variable value = rowObject.field(info.name);
-
-        if (info.isArray()) {
-            MethodHandle mh = ArrayStringMaker.make(info.type, info.isUnsignedInteger());
-            bob.set(mm.invoke(mh, bob, value, 16)); // limit=16
-        } else {
-            if (info.isUnsignedInteger()) {
-                if (info.isNullable()) {
-                    Label notNull = mm.label();
-                    value.ifNe(null, notNull);
-                    bob.invoke("append", "null");
-                    mm.goto_(unset);
-                    notNull.here();
-                }
-                switch (info.plainTypeCode()) {
-                default: throw new AssertionError();
-                case TYPE_UBYTE: value = value.cast(int.class).and(0xff); break;
-                case TYPE_USHORT: value = value.cast(int.class).and(0xffff); break;
-                case TYPE_UINT: case TYPE_ULONG: break;
-                }
-                value = value.invoke("toUnsignedString", value);
-            }
-
-            bob.invoke("append", value);
-        }
+        CodeUtils.appendValue(bob, info, rowObject.field(info.name));
 
         unset.here();
     }

@@ -30,6 +30,7 @@ import org.cojen.tupl.Table;
 
 import org.cojen.tupl.rows.ColumnInfo;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowUtils;
 import org.cojen.tupl.rows.WeakClassCache;
 
@@ -59,7 +60,7 @@ public class JoinTableMaker {
      * @see Table#join
      */
     public static <J> JoinTable<J> join(Class<J> joinType, String specStr, Table<?>... tables) {
-        JoinSpec spec = JoinSpec.parse(JoinRowInfo.find(joinType), specStr, tables);
+        JoinSpec spec = JoinSpec.parse(RowInfo.find(joinType), specStr, tables);
         return join(joinType, spec);
     }
 
@@ -69,7 +70,7 @@ public class JoinTableMaker {
     public static <J> JoinTable<J> join(Class<J> joinType, String specStr, Database db)
         throws IOException
     {
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
         JoinSpec spec = JoinSpec.parse(joinInfo, specStr, db);
         return join(joinType, spec);
     }
@@ -124,13 +125,13 @@ public class JoinTableMaker {
 
     private final Class<?> mJoinType;
     private final Class<?> mJoinClass;
-    private final JoinRowInfo mJoinInfo;
+    private final RowInfo mJoinInfo;
     private final ClassMaker mClassMaker;
 
     private JoinTableMaker(Class<?> joinType) {
         mJoinType = joinType;
         mJoinClass = JoinRowMaker.find(joinType);
-        mJoinInfo = JoinRowInfo.find(joinType);
+        mJoinInfo = RowInfo.find(joinType);
 
         mClassMaker = RowGen.beginClassMaker
             (JoinTableMaker.class, joinType, mJoinInfo.name, null, "table")

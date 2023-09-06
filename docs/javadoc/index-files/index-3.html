@@ -188,6 +188,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Construct with an existing key, although additional keys might need to be generated.</div>
 </dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Table.html#cleanRow(R)" class="member-name-link">cleanRow(R)</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Table.html" title="interface in org.cojen.tupl">Table</a></dt>
+<dd>
+<div class="block">Sets columns which have a dirty state to clean.</div>
+</dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/DatabaseConfig.html#cleanShutdown(boolean)" class="member-name-link">cleanShutdown(boolean)</a> - Method in class org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/DatabaseConfig.html" title="class in org.cojen.tupl">DatabaseConfig</a></dt>
 <dd>
 <div class="block">When the process is cleanly shutdown, attempt to issue a full database shutdown.</div>
@@ -219,6 +223,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/Database.html#close()" class="member-name-link">close()</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Database.html" title="interface in org.cojen.tupl">Database</a></dt>
 <dd>
 <div class="block">Closes the database, ensuring durability of committed transactions.</div>
+</dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/Grouper.html#close()" class="member-name-link">close()</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Grouper.html" title="interface in org.cojen.tupl">Grouper</a></dt>
+<dd>
+<div class="block">Is called when this <code>Grouper</code> instance is no longer needed.</div>
 </dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/Index.html#close()" class="member-name-link">close()</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Index.html" title="interface in org.cojen.tupl">Index</a></dt>
 <dd>
@@ -314,6 +322,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Sharable object for supporting contended clutches.</div>
 </dd>
+<dt><a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Grouper.html#columns" class="member-name-link">columns</a> - Variable in class org.cojen.tupl.diag.<a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.Grouper.html" title="class in org.cojen.tupl.diag">QueryPlan.Grouper</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NaturalJoin.html#columns" class="member-name-link">columns</a> - Variable in class org.cojen.tupl.diag.<a href="../org.cojen.tupl/org/cojen/tupl/diag/QueryPlan.NaturalJoin.html" title="class in org.cojen.tupl.diag">QueryPlan.NaturalJoin</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="../org.cojen.tupl/org/cojen/tupl/Combiner.html#combine(byte%5B%5D,byte%5B%5D,byte%5B%5D)" class="member-name-link">combine(byte[], byte[], byte[])</a> - Method in interface org.cojen.tupl.<a href="../org.cojen.tupl/org/cojen/tupl/Combiner.html" title="interface in org.cojen.tupl">Combiner</a></dt>

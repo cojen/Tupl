@@ -101,6 +101,11 @@ final class ClientTable<R> implements Table<R> {
     }
 
     @Override
+    public void cleanRow(R row) {
+        mHelper.cleanRow(row);
+    }
+
+    @Override
     public void copyRow(R from, R to) {
         mHelper.copyRow(from, to);
     }

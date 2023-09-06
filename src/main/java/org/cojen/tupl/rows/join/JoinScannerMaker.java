@@ -40,6 +40,7 @@ import org.cojen.tupl.Transaction;
 import org.cojen.tupl.rows.ColumnInfo;
 import org.cojen.tupl.rows.EmptyScanner;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.WeakCache;
 
 import org.cojen.tupl.rows.filter.FalseFilter;
@@ -134,7 +135,7 @@ final class JoinScannerMaker {
 
         mJoinClass = JoinRowMaker.find(joinType);
 
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
 
         if (base) {
             // Generate a new sub-package to facilitate unloading.

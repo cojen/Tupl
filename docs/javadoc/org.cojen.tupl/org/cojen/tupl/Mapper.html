@@ -100,6 +100,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public interface </span><span class="element-name type-name-label">Mapper&lt;R,<wbr>T&gt;</span></div>
 <div class="block">Interface for mapping source rows to target rows. Inverse mapping is optional, but it's
  necessary for supporting modifiable views, and it's also used by the query optimizer.
+ Mapper implementations must be thread-safe.
 
  <p>For supporting inverse mapping, define a public static method for each target column
  which can be mapped to a source column. The method naming pattern must be <code>
@@ -142,7 +143,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -153,6 +154,17 @@ loadScripts(document, 'script');</script>
  <a href="Mapper.html" title="type parameter in Mapper">T</a>&nbsp;target)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Maps source rows to target rows.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="diag/QueryPlan.html" title="class in org.cojen.tupl.diag">QueryPlan</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#plan(org.cojen.tupl.diag.QueryPlan.Mapper)" class="member-name-link">plan</a><wbr>(<a href="diag/QueryPlan.Mapper.html" title="class in org.cojen.tupl.diag">QueryPlan.Mapper</a>&nbsp;plan)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Override this method to customize the mapper's query plan.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#sourceProjection()" class="member-name-link">sourceProjection</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns a comma-separated list of source columns which are needed by this <code>
+ Mapper</code>.</div>
 </div>
 </div>
 </div>
@@ -183,6 +195,27 @@ throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/
 <dd>null if filtered out</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="sourceProjection()">
+<h3>sourceProjection</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">sourceProjection</span>()</div>
+<div class="block">Returns a comma-separated list of source columns which are needed by this <code>
+ Mapper</code>. Null is returned by default, which indicates that all columns are needed.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="plan(org.cojen.tupl.diag.QueryPlan.Mapper)">
+<h3>plan</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="diag/QueryPlan.html" title="class in org.cojen.tupl.diag">QueryPlan</a></span>&nbsp;<span class="element-name">plan</span><wbr><span class="parameters">(<a href="diag/QueryPlan.Mapper.html" title="class in org.cojen.tupl.diag">QueryPlan.Mapper</a>&nbsp;plan)</span></div>
+<div class="block">Override this method to customize the mapper's query plan.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>plan</code> - original plan</dd>
+<dt>Returns:</dt>
+<dd>original or replacement plan</dd>
 </dl>
 </section>
 </li>

@@ -96,6 +96,12 @@ class TableBasicsMaker {
             }
         }
 
+        // Add the cleanRow method.
+        {
+            MethodMaker mm = cm.addMethod(null, "cleanRow", Object.class).public_();
+            TableMaker.markAllUndirty(mm.param(0).cast(rowClass), rowGen.info);
+        }
+
         // Add the copyRow method.
         {
             MethodMaker mm = cm.addMethod(null, "copyRow", Object.class, Object.class).public_();

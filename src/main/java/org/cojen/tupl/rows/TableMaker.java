@@ -247,6 +247,24 @@ public class TableMaker {
     }
 
     /**
+     * Unset all columns except for the excluded ones.
+     *
+     * @param rowVar type must be the row implementation class
+     */
+    protected static void unset(RowInfo info, Variable rowVar, Map<String, ColumnInfo> excluded) {
+        markUnset(rowVar, info.rowGen(), excluded);
+
+        // Clear the unset target column fields that refer to objects.
+
+        for (ColumnInfo target : info.allColumns.values()) {
+            String name = target.name;
+            if (!excluded.containsKey(name) && !target.type.isPrimitive()) {
+                rowVar.field(name).set(null);
+            }
+        }
+    }
+
+    /**
      * Makes code which obtains the current trigger and acquires the lock which must be held
      * for the duration of the operation. The lock must be held even if no trigger must be run.
      *
@@ -750,7 +768,7 @@ public class TableMaker {
             cont.here();
         }
 
-        markAllUndirty(rowVar, rowInfo);
+        tableVar.invoke("cleanRow", rowVar);
 
         if (returnTrue) {
             mm.return_(true);

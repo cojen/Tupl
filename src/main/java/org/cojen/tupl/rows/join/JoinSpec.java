@@ -29,6 +29,7 @@ import org.cojen.tupl.Database;
 import org.cojen.tupl.Table;
 
 import org.cojen.tupl.rows.ColumnInfo;
+import org.cojen.tupl.rows.GroupedTable;
 import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowUtils;
 import org.cojen.tupl.rows.SimpleParser;
@@ -48,8 +49,8 @@ final class JoinSpec {
 
     /**
      * JoinOp = Source { Type Source }
-     * Source = Column | Parens
-     * Parens = "(" JoinOp ")"
+     * Source = Column | Group
+     * Group = "(" JoinOp ")"
      * Column = string
      * Type   = ":" | "::" | ">:" | ":<" | ">:<" | ">" | "<" | "><"
      *
@@ -62,7 +63,7 @@ final class JoinSpec {
      * a < b    right anti join
      * a >< b   full anti join
      */
-    static JoinSpec parse(JoinRowInfo joinInfo, String spec, Table... tables) {
+    static JoinSpec parse(RowInfo joinInfo, String spec, Table... tables) {
         try {
             return new JoinSpec(new Parser(joinInfo.allColumns, spec, tables, null).parse());
         } catch (IOException e) {
@@ -74,7 +75,7 @@ final class JoinSpec {
     /**
      * Variant which opens tables automatically.
      */
-    static JoinSpec parse(JoinRowInfo joinInfo, String spec, Database db) throws IOException {
+    static JoinSpec parse(RowInfo joinInfo, String spec, Database db) throws IOException {
         return new JoinSpec(new Parser(joinInfo.allColumns, spec, null, db).parse());
     }
 
@@ -613,9 +614,9 @@ final class JoinSpec {
 
     public static sealed class Column extends Node implements Source {
         private final Table mTable;
-        private final JoinColumnInfo mColumn;
+        private final ColumnInfo mColumn;
 
-        Column(Table table, JoinColumnInfo column) {
+        Column(Table table, ColumnInfo column) {
             mTable = table;
             mColumn = column;
         }
@@ -663,7 +664,7 @@ final class JoinSpec {
             return mTable;
         }
 
-        public final JoinColumnInfo column() {
+        public final ColumnInfo column() {
             return mColumn;
         }
 
@@ -797,11 +798,17 @@ final class JoinSpec {
         public void assignScore(FilterScorer fs, Set<String> available) {
             KeyMatch km = mKeyMatch;
             if (km == null) {
-                JoinColumnInfo column = column();                
+                ColumnInfo column = column();                
                 mKeyMatch = km = KeyMatch.build(column.name + '.', RowInfo.find(column.type));
             }
 
-            mKeyScore = km.score(mFilter);
+            if (!km.hasPkColumns() && table() instanceof GroupedTable) {
+                // Table has at most one row, and so it should be ordered first in the join.
+                // Assign a score which is greater than what the KeyMatch.score method returns.
+                mKeyScore = 3;
+            } else {
+                mKeyScore = km.score(mFilter);
+            }
 
             mFilterScore = fs.calculate(mFilter, available);
         }
@@ -820,14 +827,32 @@ final class JoinSpec {
             if (this == other) {
                 return 0;
             }
+
             if (!(other instanceof PlannedColumn planned)) {
                 return super.compareScore(other);
             }
+
             int cmp = Integer.compare(mKeyScore, planned.mKeyScore);
             if (cmp != 0) {
                 return cmp;
             }
-            return FilterScorer.compare(mFilterScore, planned.mFilterScore);
+
+            cmp = FilterScorer.compare(mFilterScore, planned.mFilterScore);
+            if (cmp != 0) {
+                return cmp;
+            }
+
+            // If either table is grouped (performs aggregatation), then it likely generates
+            // fewer rows, and so it should be first in the join order.
+            if (table() instanceof GroupedTable) {
+                if (!(planned.table() instanceof GroupedTable)) {
+                    return 1;
+                }
+            } else if (planned.table() instanceof GroupedTable) {
+                return -1;
+            }
+
+            return cmp;
         }
 
         @Override
@@ -1298,7 +1323,7 @@ final class JoinSpec {
     }
 
     private static final class Parser extends SimpleParser {
-        private final Map<String, JoinColumnInfo> mAllColumns;
+        private final Map<String, ColumnInfo> mAllColumns;
         private final Set<String> mAvailableNames;
         private final Table[] mTables;
         private final Database mDb;
@@ -1310,7 +1335,7 @@ final class JoinSpec {
         /**
          * @param db optional; pass a database instance to open tables automatically
          */
-        Parser(Map<String, JoinColumnInfo> allColumns, String spec, Table[] tables, Database db) {
+        Parser(Map<String, ColumnInfo> allColumns, String spec, Table[] tables, Database db) {
             super(spec);
             mAllColumns = allColumns;
             mAvailableNames = new HashSet<>(allColumns.keySet());
@@ -1390,7 +1415,7 @@ final class JoinSpec {
             } while (Character.isJavaIdentifierPart(c));
 
             String name = mText.substring(start, --mPos);
-            JoinColumnInfo column = mAllColumns.get(name);
+            ColumnInfo column = mAllColumns.get(name);
 
             if (column == null) {
                 mPos = start;

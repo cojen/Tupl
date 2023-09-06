@@ -1295,7 +1295,7 @@ final class Node extends Clutch implements DatabaseAccess {
     }
 
     /**
-     * @return 2-based insertion pos, which is negative if key not found
+     * @return 2-based insertion pos, which is negative if key isn't found
      */
     int binarySearch(byte[] key) throws IOException {
         final var page = mPage;
@@ -1304,8 +1304,9 @@ final class Node extends Clutch implements DatabaseAccess {
         int lowPos = startPos;
         int highPos = searchVecEnd();
 
-        int lowMatch = 0;
-        int highMatch = 0;
+        // TODO: Using this feature reduces performance for small keys. Is the potential
+        // benefit for large keys worth it?
+        // int lowMatch = 0, highMatch = 0;
 
         outer: while (lowPos <= highPos) {
             int midPos = ((lowPos + highPos) >> 1) & ~1;
@@ -1324,23 +1325,20 @@ final class Node extends Clutch implements DatabaseAccess {
                         // Note: An optimized version wouldn't need to copy the whole key.
                         byte[] compareKey = getDatabase()
                             .reconstructKey(page, compareLoc, compareLen);
-                        compareLen = compareKey.length;
 
+                        compareLen = compareKey.length;
                         int minLen = Math.min(compareLen, keyLen);
-                        i = Math.min(lowMatch, highMatch);
-                        for (; i<minLen; i++) {
-                            byte cb = compareKey[i];
-                            byte kb = key[i];
-                            if (cb != kb) {
-                                if ((cb & 0xff) < (kb & 0xff)) {
-                                    lowPos = midPos + 2;
-                                    lowMatch = i;
-                                } else {
-                                    highPos = midPos - 2;
-                                    highMatch = i;
-                                }
-                                continue outer;
+                        int cmp = compareUnsigned(compareKey, 0, minLen, key, 0, minLen);
+
+                        if (cmp != 0) {
+                            if (cmp < 0) {
+                                lowPos = midPos + 2;
+                                //lowMatch = mismatch & ~7;
+                            } else {
+                                highPos = midPos - 2;
+                                //highMatch = mismatch & ~7;
                             }
+                            continue outer;
                         }
 
                         break compare;
@@ -1348,17 +1346,33 @@ final class Node extends Clutch implements DatabaseAccess {
                 }
 
                 int minLen = Math.min(compareLen, keyLen);
-                i = Math.min(lowMatch, highMatch);
-                for (; i<minLen; i++) {
+                int minLen8 = minLen & ~7;
+                i = 0;//Math.min(lowMatch, highMatch);
+
+                for (; i < minLen8; i += 8) {
+                    long cv = p_longGetBE(page, compareLoc + i);
+                    long kv = Utils.decodeLongBE(key, i);
+                    int cmp = Long.compareUnsigned(cv, kv);
+                    if (cmp != 0) {
+                        if (cmp < 0) {
+                            lowPos = midPos + 2;
+                            //lowMatch = i;
+                        } else {
+                            highPos = midPos - 2;
+                            //highMatch = i;
+                        }
+                        continue outer;
+                    }
+                }
+
+                for (; i < minLen; i++) {
                     byte cb = p_byteGet(page, compareLoc + i);
                     byte kb = key[i];
                     if (cb != kb) {
                         if ((cb & 0xff) < (kb & 0xff)) {
                             lowPos = midPos + 2;
-                            lowMatch = i;
                         } else {
                             highPos = midPos - 2;
-                            highMatch = i;
                         }
                         continue outer;
                     }
@@ -1367,10 +1381,10 @@ final class Node extends Clutch implements DatabaseAccess {
 
             if (compareLen < keyLen) {
                 lowPos = midPos + 2;
-                lowMatch = i;
+                //lowMatch = i & ~7;
             } else if (compareLen > keyLen) {
                 highPos = midPos - 2;
-                highMatch = i;
+                //highMatch = i & ~7;
             } else {
                 return midPos - startPos;
             }
@@ -1381,7 +1395,7 @@ final class Node extends Clutch implements DatabaseAccess {
 
     /**
      * @param midPos 2-based starting position
-     * @return 2-based insertion pos, which is negative if key not found
+     * @return 2-based insertion pos, which is negative if key isn't found
      */
     int binarySearch(byte[] key, int midPos) throws IOException {
         final int startPos = searchVecStart();
@@ -1398,8 +1412,9 @@ final class Node extends Clutch implements DatabaseAccess {
         final var page = mPage;
         final int keyLen = key.length;
 
-        int lowMatch = 0;
-        int highMatch = 0;
+        // TODO: Using this feature reduces performance for small keys. Is the potential
+        // benefit for large keys worth it?
+        // int lowMatch = 0, highMatch = 0;
 
         while (true) {
             compare: {
@@ -1417,23 +1432,20 @@ final class Node extends Clutch implements DatabaseAccess {
                             // Note: An optimized version wouldn't need to copy the whole key.
                             byte[] compareKey = getDatabase()
                                 .reconstructKey(page, compareLoc, compareLen);
-                            compareLen = compareKey.length;
 
+                            compareLen = compareKey.length;
                             int minLen = Math.min(compareLen, keyLen);
-                            i = Math.min(lowMatch, highMatch);
-                            for (; i<minLen; i++) {
-                                byte cb = compareKey[i];
-                                byte kb = key[i];
-                                if (cb != kb) {
-                                    if ((cb & 0xff) < (kb & 0xff)) {
-                                        lowPos = midPos + 2;
-                                        lowMatch = i;
-                                    } else {
-                                        highPos = midPos - 2;
-                                        highMatch = i;
-                                    }
-                                    break compare;
+                            int cmp = compareUnsigned(compareKey, 0, minLen, key, 0, minLen);
+
+                            if (cmp != 0) {
+                                if (cmp < 0) {
+                                    lowPos = midPos + 2;
+                                    //lowMatch = mismatch & ~7;
+                                } else {
+                                    highPos = midPos - 2;
+                                    //highMatch = mismatch & ~7;
                                 }
+                                break compare;
                             }
 
                             break c2;
@@ -1441,17 +1453,33 @@ final class Node extends Clutch implements DatabaseAccess {
                     }
 
                     int minLen = Math.min(compareLen, keyLen);
-                    i = Math.min(lowMatch, highMatch);
-                    for (; i<minLen; i++) {
+                    int minLen8 = minLen & ~7;
+                    i = 0;//Math.min(lowMatch, highMatch);
+
+                    for (; i < minLen8; i += 8) {
+                        long cv = p_longGetBE(page, compareLoc + i);
+                        long kv = Utils.decodeLongBE(key, i);
+                        int cmp = Long.compareUnsigned(cv, kv);
+                        if (cmp != 0) {
+                            if (cmp < 0) {
+                                lowPos = midPos + 2;
+                                //lowMatch = i;
+                            } else {
+                                highPos = midPos - 2;
+                                //highMatch = i;
+                            }
+                            break compare;
+                        }
+                    }
+
+                    for (; i < minLen; i++) {
                         byte cb = p_byteGet(page, compareLoc + i);
                         byte kb = key[i];
                         if (cb != kb) {
                             if ((cb & 0xff) < (kb & 0xff)) {
                                 lowPos = midPos + 2;
-                                lowMatch = i;
                             } else {
                                 highPos = midPos - 2;
-                                highMatch = i;
                             }
                             break compare;
                         }
@@ -1460,10 +1488,10 @@ final class Node extends Clutch implements DatabaseAccess {
 
                 if (compareLen < keyLen) {
                     lowPos = midPos + 2;
-                    lowMatch = i;
+                    //lowMatch = i & ~7;
                 } else if (compareLen > keyLen) {
                     highPos = midPos - 2;
-                    highMatch = i;
+                    //highMatch = i & ~7;
                 } else {
                     return midPos - startPos;
                 }

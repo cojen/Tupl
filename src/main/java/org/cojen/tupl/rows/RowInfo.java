@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -55,6 +56,8 @@ import static org.cojen.tupl.rows.ColumnInfo.*;
 public class RowInfo extends ColumnSet {
     private static final WeakClassCache<RowInfo> cache = new WeakClassCache<>();
 
+    private static Set<Class<?>> examining;
+
     /**
      * Returns a new or cached instance.
      *
@@ -67,8 +70,21 @@ public class RowInfo extends ColumnSet {
             synchronized (cache) {
                 info = cache.get(rowType);
                 if (info == null) {
-                    info = examine(rowType);
-                    cache.put(rowType, info);
+                    if (examining == null) {
+                        examining = new HashSet<>();
+                    }
+                    if (!examining.add(rowType)) {
+                        throw new IllegalArgumentException("Recursive join");
+                    }
+                    try {
+                        info = examine(rowType);
+                        cache.put(rowType, info);
+                    } finally {
+                        examining.remove(rowType);
+                        if (examining.isEmpty()) {
+                            examining = null;
+                        }
+                    }
                 }
             }
         }
@@ -147,6 +163,29 @@ public class RowInfo extends ColumnSet {
         info.alternateKeys = info.finishIndexSet(info.alternateKeys);
         info.secondaryIndexes = info.finishIndexSet(info.secondaryIndexes);
 
+        if (CompareUtils.needsCompareTo(rowType)) {
+            StringBuilder b = null;
+
+            for (ColumnInfo column : info.allColumns.values()) {
+                if (column.typeCode == TYPE_JOIN &&
+                    !Comparable.class.isAssignableFrom(column.type))
+                {
+                    if (b == null) {
+                        b = new StringBuilder();
+                        b.append("extends Comparable but not all columns are Comparable: ");
+                        b.append(column.name);
+                    } else {
+                        b.append(", ").append(column.name);
+                    }
+                }
+            }
+
+            if (b != null) {
+                messages.add(b.toString());
+                errorCheck(rowType, messages);
+            }
+        }
+
         // This is necessary because not all fields are final, and the cache is initially
         // accessed without being synchronized.
         VarHandle.storeStoreFence();
@@ -155,13 +194,13 @@ public class RowInfo extends ColumnSet {
     }
 
     // Fully qualified row type name.
-    final String name;
+    public final String name;
 
     // Sets are reduced and contain all the necessary columns to retrieve by primary key.
     public NavigableSet<ColumnSet> alternateKeys;
 
     // Sets are reduced and contain all the necessary columns to retrieve by primary key.
-    NavigableSet<ColumnSet> secondaryIndexes;
+    public NavigableSet<ColumnSet> secondaryIndexes;
 
     private volatile RowGen mRowGen;
 
@@ -269,12 +308,8 @@ public class RowInfo extends ColumnSet {
     }
 
     private static void errorCheck(Class<?> rowType, Set<String> messages) {
-        errorCheck("Row type", rowType, messages);
-    }
-
-    public static void errorCheck(String prefix, Class<?> rowType, Set<String> messages) {
         if (!messages.isEmpty()) {
-            var bob = new StringBuilder().append(prefix).append(' ').append('"');
+            var bob = new StringBuilder().append("Row type").append(' ').append('"');
             bob.append(rowType.getSimpleName()).append("\" is malformed: ");
             final int length = bob.length();
             for (String message : messages) {
@@ -453,6 +488,8 @@ public class RowInfo extends ColumnSet {
      * @return -1 if unsupported
      */
     private static int selectTypeCode(Set<String> messages, String name, Class<?> type) {
+        String msg = null;
+
         if (type.isPrimitive()) {
             if (type == int.class) {
                 return TYPE_INT;
@@ -470,6 +507,17 @@ public class RowInfo extends ColumnSet {
                 return TYPE_CHAR;
             } else if (type == short.class) {
                 return TYPE_SHORT;
+            }
+        } else if (type.isInterface()) {
+            // Assume column is joining to another row.
+            try {
+                RowInfo.find(type);
+                return TYPE_JOIN;
+            } catch (IllegalArgumentException e) {
+                msg = e.getMessage();
+                if (msg == null || msg.isEmpty()) {
+                    msg = e.toString();
+                }
             }
         } else if (type.isArray()) {
             Class<?> subType = type.getComponentType();
@@ -504,8 +552,14 @@ public class RowInfo extends ColumnSet {
         }
 
         if (messages != null) {
-            messages.add("column \"" + type.getSimpleName() + ' ' + name +
-                         "\" has an unsupported type");
+            var message = new StringBuilder().append("column \"").append(type.getSimpleName())
+                .append(' ').append(name).append("\" has an unsupported type");
+
+            if (msg != null) {
+                message.append(": ").append(msg);
+            }
+
+            messages.add(message.toString());
         }
 
         return -1;

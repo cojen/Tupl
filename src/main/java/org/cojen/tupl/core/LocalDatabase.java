@@ -151,10 +151,6 @@ final class LocalDatabase extends CoreDatabase {
         return count <= Integer.MAX_VALUE ? (int) count : Integer.MAX_VALUE;
     }
 
-    private static long byteCountFromNodes(int nodes, int pageSize) {
-        return nodes * (long) (pageSize + NODE_OVERHEAD);
-    }
-
     private static final int I_ENCODING_VERSION        = 0;
     private static final int I_ROOT_PAGE_ID            = I_ENCODING_VERSION + 4;
     private static final int I_MASTER_UNDO_LOG_PAGE_ID = I_ROOT_PAGE_ID + 8;
@@ -365,21 +361,6 @@ final class LocalDatabase extends CoreDatabase {
      * @param launcher unshared launcher
      */
     private LocalDatabase(Launcher launcher, boolean destroy) throws IOException {
-        mEncodingVersion = launcher.mBasicMode ? 20130113 : 20130112;
-
-        launcher.mEventListener = mEventListener = 
-            SafeEventListener.makeSafe(launcher.mEventListener);
-
-        mCustomHandlers = Launcher.mapClone(launcher.mCustomHandlers);
-        mCustomHandlersById = Launcher.newByIdMap(mCustomHandlers);
-
-        mPrepareHandlers = Launcher.mapClone(launcher.mPrepareHandlers);
-        mPrepareHandlersById = Launcher.newByIdMap(mPrepareHandlers);
-
-        mBaseFile = launcher.mBaseFile;
-        mReadOnly = launcher.mReadOnly;
-        final File[] dataFiles = launcher.dataFiles();
-
         int pageSize = launcher.mPageSize;
         boolean explicitPageSize = true;
         if (pageSize <= 0) {
@@ -395,49 +376,25 @@ final class LocalDatabase extends CoreDatabase {
             throw new IllegalArgumentException("Page size must be even: " + pageSize);
         }
 
-        int minCache, maxCache;
-        cacheSize: {
-            long minCacheBytes = Math.max(0, launcher.mMinCacheBytes);
-            long maxCacheBytes = Math.max(0, launcher.mMaxCacheBytes);
+        mEncodingVersion = launcher.mBasicMode ? 20130113 : 20130112;
 
-            if (maxCacheBytes == 0) {
-                maxCacheBytes = minCacheBytes;
-                if (maxCacheBytes == 0) {
-                    minCache = maxCache = DEFAULT_CACHE_NODES;
-                    break cacheSize;
-                }
-            }
+        launcher.mEventListener = mEventListener = 
+            SafeEventListener.makeSafe(launcher.mEventListener);
 
-            if (minCacheBytes > maxCacheBytes) {
-                throw new IllegalArgumentException
-                    ("Minimum cache size exceeds maximum: " +
-                     minCacheBytes + " > " + maxCacheBytes);
-            }
+        mCustomHandlers = Launcher.mapClone(launcher.mCustomHandlers);
+        mCustomHandlersById = Launcher.newByIdMap(mCustomHandlers);
 
-            minCache = nodeCountFromBytes(minCacheBytes, pageSize);
-            maxCache = nodeCountFromBytes(maxCacheBytes, pageSize);
+        mPrepareHandlers = Launcher.mapClone(launcher.mPrepareHandlers);
+        mPrepareHandlersById = Launcher.newByIdMap(mPrepareHandlers);
 
-            minCache = Math.max(MIN_CACHE_NODES, minCache);
-            maxCache = Math.max(MIN_CACHE_NODES, maxCache);
-        }
-
-        // Update launcher such that info file is correct.
-        launcher.mMinCacheBytes = byteCountFromNodes(minCache, pageSize);
-        launcher.mMaxCacheBytes = byteCountFromNodes(maxCache, pageSize);
+        mBaseFile = launcher.mBaseFile;
+        mReadOnly = launcher.mReadOnly;
+        final File[] dataFiles = launcher.dataFiles();
 
         mDurabilityMode = launcher.mDurabilityMode;
         mDefaultLockTimeoutNanos = launcher.mLockTimeoutNanos;
         mLockManager = new LockManager(this, launcher.mLockUpgradeRule, mDefaultLockTimeoutNanos);
         mLocalTransaction = new ThreadLocal<>();
-
-        // Initialize NodeMapTable, the primary cache of Nodes.
-        {
-            int capacity = Utils.roundUpPower2(maxCache);
-            if (capacity < 0) {
-                capacity = 0x40000000;
-            }
-            mNodeMapTable = new Node[capacity];
-        }
 
         if (mBaseFile != null && !mReadOnly && launcher.mMkdirs) {
             File baseDir = mBaseFile.getParentFile();
@@ -529,16 +486,36 @@ final class LocalDatabase extends CoreDatabase {
             /*P*/ // mFullyMapped = fullyMapped;
             /*P*/ // ]
 
+            mCommitLock = mPageDb.commitLock();
+
             // Actual page size might differ from configured size.
             pageSize = mPageSize = mPageDb.pageSize();
 
-            /*P*/ // [
-            launcher.mDirectPageAccess = false;
-            /*P*/ // |
-            /*P*/ // launcher.mDirectPageAccess = true;
-            /*P*/ // ]
+            int minCache, maxCache;
+            cacheSize: {
+                long minCacheBytes = Math.max(0, launcher.mMinCacheBytes);
+                long maxCacheBytes = Math.max(0, launcher.mMaxCacheBytes);
 
-            mCommitLock = mPageDb.commitLock();
+                if (maxCacheBytes == 0) {
+                    maxCacheBytes = minCacheBytes;
+                    if (maxCacheBytes == 0) {
+                        minCache = maxCache = DEFAULT_CACHE_NODES;
+                        break cacheSize;
+                    }
+                }
+
+                if (minCacheBytes > maxCacheBytes) {
+                    throw new IllegalArgumentException
+                        ("Minimum cache size exceeds maximum: " +
+                         minCacheBytes + " > " + maxCacheBytes);
+                }
+
+                minCache = nodeCountFromBytes(minCacheBytes, pageSize);
+                maxCache = nodeCountFromBytes(maxCacheBytes, pageSize);
+
+                minCache = Math.max(MIN_CACHE_NODES, minCache);
+                maxCache = Math.max(MIN_CACHE_NODES, maxCache);
+            }
 
             // Pre-allocate nodes. They are automatically added to the node group usage lists,
             // and so nothing special needs to be done to allow them to get used. Since the
@@ -547,6 +524,15 @@ final class LocalDatabase extends CoreDatabase {
             if (mEventListener != null) {
                 mEventListener.notify(EventType.CACHE_INIT_BEGIN,
                                       "Initializing %1$d cache nodes", minCache);
+            }
+
+            // Initialize NodeMapTable, the primary cache of Nodes.
+            {
+                int capacity = Utils.roundUpPower2(maxCache);
+                if (capacity < 0) {
+                    capacity = 0x40000000;
+                }
+                mNodeMapTable = new Node[capacity];
             }
 
             NodeGroup[] groups;
@@ -4655,6 +4641,11 @@ final class LocalDatabase extends CoreDatabase {
      */
     void nodeMapDeleteAll() {
         final Node[] table = mNodeMapTable;
+
+        if (table == null) {
+            // Database never opened properly.
+            return;
+        }
 
         outer: for (int slot=0; slot<table.length; ) {
             var node = (Node) cNodeMapElementHandle.getVolatile(table, slot);

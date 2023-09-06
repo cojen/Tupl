@@ -46,6 +46,7 @@ import org.cojen.tupl.rows.ColumnInfo;
 import org.cojen.tupl.rows.DisjointUnionQueryLauncher;
 import org.cojen.tupl.rows.QueryLauncher;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowUtils;
 import org.cojen.tupl.rows.RowWriter;
 import org.cojen.tupl.rows.WeakCache;
@@ -114,7 +115,7 @@ final class JoinQueryLauncherMaker {
 
     private final JoinSpec mTableSpec;
     private final Class<?> mJoinType;
-    private final JoinRowInfo mJoinInfo;
+    private final RowInfo mJoinInfo;
     private final Query mQuery;
 
     private JoinPlanner mPlanner;
@@ -125,7 +126,7 @@ final class JoinQueryLauncherMaker {
     private JoinQueryLauncherMaker(JoinTable<?> table, String queryStr) {
         mTableSpec = table.joinSpec();
         mJoinType = table.rowType();
-        mJoinInfo = JoinRowInfo.find(mJoinType);
+        mJoinInfo = RowInfo.find(mJoinType);
         mQuery = new Parser(mJoinInfo.allColumns, queryStr).parseQuery(null);
     }
 

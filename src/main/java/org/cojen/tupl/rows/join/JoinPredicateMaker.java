@@ -40,6 +40,7 @@ import org.cojen.tupl.rows.CompareUtils;
 import org.cojen.tupl.rows.ConvertCallSite;
 import org.cojen.tupl.rows.Converter;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowUtils;
 import org.cojen.tupl.rows.WeakCache;
 
@@ -111,7 +112,7 @@ public final class JoinPredicateMaker implements Visitor {
     }
 
     private final Class<?> mJoinType;
-    private final JoinRowInfo mJoinInfo;
+    private final RowInfo mJoinInfo;
     private final RowFilter mFilter;
 
     private ClassMaker mClassMaker;
@@ -125,7 +126,7 @@ public final class JoinPredicateMaker implements Visitor {
      */
     private JoinPredicateMaker(Class<?> joinType, String queryStr, RowFilter filter) {
         mJoinType = joinType;
-        mJoinInfo = JoinRowInfo.find(joinType);
+        mJoinInfo = RowInfo.find(joinType);
 
         if (filter == null) {
             var parser = new Parser(mJoinInfo.allColumns, queryStr);

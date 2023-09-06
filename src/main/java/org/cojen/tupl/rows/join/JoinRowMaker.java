@@ -37,6 +37,7 @@ import org.cojen.tupl.rows.ComparatorMaker;
 import org.cojen.tupl.rows.CompareUtils;
 import org.cojen.tupl.rows.OrderBy;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowMaker;
 import org.cojen.tupl.rows.WeakClassCache;
 
@@ -60,7 +61,7 @@ public class JoinRowMaker {
             synchronized (cache) {
                 clazz = cache.get(rowType);
                 if (clazz == null) {
-                    clazz = new JoinRowMaker(rowType, JoinRowInfo.find(rowType)).finish();
+                    clazz = new JoinRowMaker(rowType, RowInfo.find(rowType)).finish();
                     cache.put(rowType, clazz);
                 }
             }
@@ -70,10 +71,17 @@ public class JoinRowMaker {
     }
 
     private final Class<?> mJoinType;
-    private final JoinRowInfo mJoinInfo;
+    private final RowInfo mJoinInfo;
     private final ClassMaker mClassMaker;
 
-    private JoinRowMaker(Class<?> joinType, JoinRowInfo joinInfo) {
+    private JoinRowMaker(Class<?> joinType, RowInfo joinInfo) {
+        for (ColumnInfo info : joinInfo.allColumns.values()) {
+            if (info.isScalarType()) {
+                throw new IllegalArgumentException
+                    ("Join type cannot have any scalar columns: " + info.name);
+            }
+        }
+
         mJoinType = joinType;
         mJoinInfo = joinInfo;
         mClassMaker = RowGen.beginClassMaker(getClass(), joinType, joinInfo.name, null, null)
@@ -144,7 +152,7 @@ public class JoinRowMaker {
     }
 
     private static void addHashCode(MethodMaker mm, Class<?> joinType, Variable rowObject) {
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
 
         // Start with an initially complex hash, in case all the columns are null.
         final var hash = mm.var(int.class).set(joinInfo.name.hashCode());
@@ -170,7 +178,7 @@ public class JoinRowMaker {
     private static void addEquals(MethodMaker mm, Class<?> joinType,
                                   Variable rowObject, Variable otherObject)
     {
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
 
         // Quick check.
         {
@@ -205,7 +213,7 @@ public class JoinRowMaker {
     }
 
     private static void addToString(MethodMaker mm, Class<?> joinType, Variable rowObject) {
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
 
         var bob = mm.new_(StringBuilder.class)
             //.invoke("append", mm.var(Class.class).set(joinType).invoke("getName"))
@@ -242,7 +250,7 @@ public class JoinRowMaker {
     }
 
     private static void addClone(MethodMaker mm, Class<?> joinType, Variable rowObject) {
-        JoinRowInfo joinInfo = JoinRowInfo.find(joinType);
+        RowInfo joinInfo = RowInfo.find(joinType);
 
         Variable clone = rowObject.invoke(cloneMethodName(joinInfo));
 
@@ -274,7 +282,7 @@ public class JoinRowMaker {
     /**
      * Returns a unique method name for invoking the inherited Object.clone method.
      */
-    private static String cloneMethodName(JoinRowInfo joinInfo) {
+    private static String cloneMethodName(RowInfo joinInfo) {
         String name = "clone$";
         while (joinInfo.allColumns.containsKey(name)) {
             name += '$';
@@ -304,7 +312,7 @@ public class JoinRowMaker {
                                        Class<?> joinType)
     {
         MethodMaker mm = MethodMaker.begin(lookup, name, mt);
-        OrderBy orderBy = OrderBy.forColumns(JoinRowInfo.find(joinType).allColumns.values());
+        OrderBy orderBy = OrderBy.forColumns(RowInfo.find(joinType).allColumns.values());
         ComparatorMaker.makeCompare(mm, orderBy);
         return new ConstantCallSite(mm.finish());
     }

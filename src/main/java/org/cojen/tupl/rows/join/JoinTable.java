@@ -36,6 +36,7 @@ import org.cojen.tupl.Transaction;
 import org.cojen.tupl.diag.QueryPlan;
 
 import org.cojen.tupl.rows.QueryLauncher;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.SoftCache;
 
 /**
@@ -169,7 +170,7 @@ public abstract class JoinTable<J> implements Table<J> {
         JoinSpec spec = mSpecRef.get();
 
         if (spec == null) {
-            spec = JoinSpec.parse(JoinRowInfo.find(rowType()), mSpecStr, mTables);
+            spec = JoinSpec.parse(RowInfo.find(rowType()), mSpecStr, mTables);
             var ref = new SoftReference<>(spec);
             VarHandle.storeStoreFence();
             mSpecRef = ref;

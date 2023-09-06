@@ -17,16 +17,20 @@
 
 package org.cojen.tupl.rows;
 
+import java.lang.invoke.MethodHandle;
+
 import org.cojen.maker.Label;
 import org.cojen.maker.MethodMaker;
 import org.cojen.maker.Variable;
+
+import static org.cojen.tupl.rows.ColumnInfo.*;
 
 /**
  * 
  *
  * @author Brian S O'Neill
  */
-class CodeUtils {
+public class CodeUtils {
     /**
      * Allocates a new instance if the given variable is null or else blindly casts it to the
      * given type.
@@ -77,5 +81,47 @@ class CodeUtils {
         // If this cast succeeds, then the original exception is thrown instead.
         var.cast(rowClass);
         ex.throw_();
+    }
+
+    /**
+     * Appends a column value to a StringBuilder.
+     *
+     * @param bob StringBuilder
+     */
+    public static void appendValue(Variable bob, ColumnInfo info, Variable value) {
+        MethodMaker mm = bob.methodMaker();
+
+        if (info.isArray()) {
+            MethodHandle mh = ArrayStringMaker.make(info.type, info.isUnsignedInteger());
+            bob.set(mm.invoke(mh, bob, value, 16)); // limit=16
+            return;
+        }
+
+        Label done = null;
+
+        if (info.isUnsignedInteger()) {
+            if (info.isNullable()) {
+                Label notNull = mm.label();
+                value.ifNe(null, notNull);
+                bob.invoke("append", "null");
+                done = mm.label().goto_();
+                notNull.here();
+            }
+
+            switch (info.plainTypeCode()) {
+            default: throw new AssertionError();
+            case TYPE_UBYTE: value = value.cast(int.class).and(0xff); break;
+            case TYPE_USHORT: value = value.cast(int.class).and(0xffff); break;
+            case TYPE_UINT: case TYPE_ULONG: break;
+            }
+
+            value = value.invoke("toUnsignedString", value);
+        }
+
+        bob.invoke("append", value);
+
+        if (done != null) {
+            done.here();
+        }
     }
 }

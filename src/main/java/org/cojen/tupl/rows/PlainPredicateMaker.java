@@ -67,6 +67,6 @@ public final class PlainPredicateMaker {
      * MethodHandle signature: Predicate xxx(Object... args)
      */
     static MethodHandle predicateHandle(Class<?> rowType, String query) {
-        return (MethodHandle) cCache.obtain(new Pair<>(rowType, query), null);
+        return cCache.obtain(new Pair<>(rowType, query), null);
     }
 }

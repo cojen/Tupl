@@ -636,6 +636,26 @@ public class MappedTest {
             assertEquals("{identifier=1, string=hello}", row.toString());
             assertNull(scanner.step());
         }
+
+        query = "{-identifier} string >= ?";
+
+        var plan3 = mapped.scannerPlan(null, query);
+        assertEquals("""
+- sort: -identifier
+  - map: org.cojen.tupl.rows.MappedTest$Renamed
+    using: Renamer
+    - filter: str >= ?2
+      - full scan over primary key: org.cojen.tupl.rows.MappedTest$TestRow
+        key columns: +id
+                     """, plan3.toString());
+
+        try (var scanner = mapped.newScanner(null, query, "a")) {
+            row = scanner.row();
+            assertEquals("{identifier=2}", row.toString());
+            row = scanner.step(row);
+            assertEquals("{identifier=1}", row.toString());
+            assertNull(scanner.step());
+        }
     }
 
     public static interface Renamed {
@@ -670,6 +690,11 @@ public class MappedTest {
         public static int number_to_num(int num) {
             return num;
         }
+
+        @Override
+        public String toString() {
+            return "Renamer";
+        }
     }
 
     @Test
@@ -680,7 +705,7 @@ public class MappedTest {
     @Test
     public void sortManyMore() throws Exception {
         teardown();
-        setup(TestUtils.newTempDatabase(getClass(), 10_000_000));
+        setup(TestUtils.newTempDatabase(getClass(), 20_000_000));
         sortMany(1_500_000);
     }
 

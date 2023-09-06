@@ -94,6 +94,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
     public static <S, T> MappedTable<S, T> map(Table<S> source, Class<T> targetType,
                                                Mapper<S, T> mapper)
     {
+        Objects.requireNonNull(targetType);
         try {
             var key = new FactoryKey(source.rowType(), targetType, mapper.getClass());
             return (MappedTable<S, T>) cFactoryCache.obtain(key, null).invokeExact(source, mapper);
@@ -121,13 +122,6 @@ public abstract class MappedTable<S, T> implements Table<T> {
         // Keep a reference to the MethodHandle instance, to prevent it from being garbage
         // collected as long as the generated table class still exists.
         tableMaker.addField(MethodHandle.class, "_").static_().private_();
-
-        // Add the markAllUndirty method.
-        {
-            MethodMaker mm = tableMaker.addMethod(null, "markAllUndirty", Object.class);
-            mm.protected_();
-            TableMaker.markAllUndirty(mm.param(0).cast(RowMaker.find(targetType)), info);
-        }
 
         addMarkValuesUnset(key, info, tableMaker);
 
@@ -204,25 +198,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
 
         MethodMaker mm = cm.addMethod(null, "markValuesUnset", Object.class).protected_();
         var targetRowVar = mm.param(0).cast(RowMaker.find(key.targetType()));
-        unset(targetInfo, targetRowVar, mapToSource);
-    }
-
-    /**
-     * Unset all columns except for the excluded ones.
-     */
-    private static void unset(RowInfo targetInfo, Variable targetRowVar,
-                              Map<String, ColumnInfo> excluded)
-    {
-        TableMaker.markUnset(targetRowVar, targetInfo.rowGen(), excluded);
-
-        // Clear the unset target column fields that refer to objects.
-
-        for (ColumnInfo target : targetInfo.allColumns.values()) {
-            String name = target.name;
-            if (!excluded.containsKey(name) && !target.type.isPrimitive()) {
-                targetRowVar.field(name).set(null);
-            }
-        }
+        TableMaker.unset(targetInfo, targetRowVar, mapToSource);
     }
 
     private final Table<S> mSource;
@@ -300,13 +276,13 @@ public abstract class MappedTable<S, T> implements Table<T> {
     }
 
     @Override
-    public boolean load(Transaction txn, T targetRow) throws IOException {
+    public final boolean load(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inversePk().inverseMapForLoad(mSource, targetRow);
         if (mSource.load(txn, sourceRow)) {
             T mappedRow = mMapper.map(sourceRow, newRow());
             if (mappedRow != null) {
-                markAllUndirty(mappedRow);
+                cleanRow(mappedRow);
                 copyRow(mappedRow, targetRow);
                 return true;
             }
@@ -316,71 +292,71 @@ public abstract class MappedTable<S, T> implements Table<T> {
     }
 
     @Override
-    public boolean exists(Transaction txn, T targetRow) throws IOException {
+    public final boolean exists(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inversePk().inverseMapForLoad(mSource, targetRow);
         return mSource.load(txn, sourceRow) && mMapper.map(sourceRow, newRow()) != null;
     }
 
     @Override
-    public void store(Transaction txn, T targetRow) throws IOException {
+    public final void store(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseFull().inverseMap(mSource, targetRow);
         mSource.store(txn, sourceRow);
-        markAllUndirty(targetRow);
+        cleanRow(targetRow);
     }
 
     @Override
-    public T exchange(Transaction txn, T targetRow) throws IOException {
+    public final T exchange(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseFull().inverseMap(mSource, targetRow);
         S oldSourceRow = mSource.exchange(txn, sourceRow);
-        markAllUndirty(targetRow);
+        cleanRow(targetRow);
         if (oldSourceRow == null) {
             return null;
         }
         T oldTargetRow = mMapper.map(oldSourceRow, newRow());
         if (oldTargetRow != null) {
-            markAllUndirty(oldTargetRow);
+            cleanRow(oldTargetRow);
         }
         return oldTargetRow;
     }
 
     @Override
-    public boolean insert(Transaction txn, T targetRow) throws IOException {
+    public final boolean insert(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseFull().inverseMap(mSource, targetRow);
         if (!mSource.insert(txn, sourceRow)) {
             return false;
         }
-        markAllUndirty(targetRow);
+        cleanRow(targetRow);
         return true;
     }
 
     @Override
-    public boolean replace(Transaction txn, T targetRow) throws IOException {
+    public final boolean replace(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseFull().inverseMap(mSource, targetRow);
         if (!mSource.replace(txn, sourceRow)) {
             return false;
         }
-        markAllUndirty(targetRow);
+        cleanRow(targetRow);
         return true;
     }
 
     @Override
-    public boolean update(Transaction txn, T targetRow) throws IOException {
+    public final boolean update(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseUpdate().inverseMap(mSource, targetRow);
         if (!mSource.update(txn, sourceRow)) {
             return false;
         }
-        markAllUndirty(targetRow);
+        cleanRow(targetRow);
         return true;
     }
 
     @Override
-    public boolean merge(Transaction txn, T targetRow) throws IOException {
+    public final boolean merge(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inverseUpdate().inverseMap(mSource, targetRow);
         if (!mSource.merge(txn, sourceRow)) {
@@ -388,7 +364,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
         }
         T mappedRow = mMapper.map(sourceRow, newRow());
         if (mappedRow != null) {
-            markAllUndirty(mappedRow);
+            cleanRow(mappedRow);
             copyRow(mappedRow, targetRow);
         } else {
             // Can't load back the row. One option is to rollback the transaction, but then the
@@ -400,14 +376,16 @@ public abstract class MappedTable<S, T> implements Table<T> {
     }
 
     @Override
-    public boolean delete(Transaction txn, T targetRow) throws IOException {
+    public final boolean delete(Transaction txn, T targetRow) throws IOException {
         Objects.requireNonNull(targetRow);
         S sourceRow = inversePk().inverseMap(mSource, targetRow);
         return mSource.delete(txn, sourceRow);
     }
 
     @Override
-    public QueryPlan scannerPlan(Transaction txn, String query, Object... args) throws IOException {
+    public final QueryPlan scannerPlan(Transaction txn, String query, Object... args)
+        throws IOException
+    {
         if (query == null) {
             return decorate(mSource.scannerPlan(txn, null));
         } else {
@@ -416,7 +394,9 @@ public abstract class MappedTable<S, T> implements Table<T> {
     }
 
     @Override
-    public QueryPlan updaterPlan(Transaction txn, String query, Object... args) throws IOException {
+    public final QueryPlan updaterPlan(Transaction txn, String query, Object... args)
+        throws IOException
+    {
         if (query == null) {
             return decorate(mSource.updaterPlan(txn, null));
         } else {
@@ -425,7 +405,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
     }
 
     private QueryPlan decorate(QueryPlan plan) {
-        return new QueryPlan.Mapper(rowType().getName(), mMapper.toString(), plan);
+        return mMapper.plan(new QueryPlan.Mapper(rowType().getName(), mMapper.toString(), plan));
     }
 
     @Override
@@ -437,11 +417,6 @@ public abstract class MappedTable<S, T> implements Table<T> {
     public final boolean isClosed() {
         return false;
     }
-
-    /**
-     * All columns which are dirty are to be marked clean, and unset columns remain as such.
-     */
-    protected abstract void markAllUndirty(T targetRow);
 
     /**
      * All columns which don't map to source primary key columns are unset. Is overridden by
@@ -666,7 +641,8 @@ public abstract class MappedTable<S, T> implements Table<T> {
 
         record ArgMapper(int targetArgNum, Method function) { } 
 
-        var finder = new InverseFinder(RowInfo.find(mSource.rowType()).allColumns);
+        RowInfo sourceInfo = RowInfo.find(mSource.rowType());
+        var finder = new InverseFinder(sourceInfo.allColumns);
 
         var checker = new Function<ColumnFilter, RowFilter>() {
             Map<ArgMapper, Integer> argMappers;
@@ -761,22 +737,27 @@ public abstract class MappedTable<S, T> implements Table<T> {
         var split = new RowFilter[2];
         targetFilter.split(checker, split);
 
-        Query sourceQuery = targetQuery.withFilter(split[0]);
-
+        RowFilter sourceFilter = split[0];
         RowFilter targetRemainder = split[1];
+
+        Query sourceQuery;
+
+        String sourceProjection = mMapper.sourceProjection();
+        if (sourceProjection == null) {
+            sourceQuery = new Query(null, null, sourceFilter);
+        } else {
+            sourceQuery = new Parser(sourceInfo.allColumns, '{' + sourceProjection + '}')
+                .parseQuery(null).withFilter(sourceFilter);
+        }
 
         SortPlan sortPlan = finder.analyzeSort(targetQuery);
 
         if (sortPlan != null && sortPlan.sourceOrder != null) {
             sourceQuery = sourceQuery.withOrderBy(sortPlan.sourceOrder);
-        } else {
-            // All source columns are required, and no orderBy is required. If no filter is
-            // required either, then the sourceQuery can be null to do a full scan.
-            if (sourceQuery.filter() == TrueFilter.THE) {
-                sourceQuery = null;
-            } else {
-                sourceQuery = new Query(null, null, sourceQuery.filter());
-            }
+        } else if (sourceQuery.projection() == null && sourceQuery.filter() == TrueFilter.THE) {
+            // There's no orderBy, all columns are projected, there's no filter, so just do a
+            // full scan.
+            sourceQuery = null;
         }
 
         Class<T> targetType = rowType();
@@ -791,12 +772,12 @@ public abstract class MappedTable<S, T> implements Table<T> {
             // Allow factory instances to serve as Mapper wrappers for supporting predicate
             // testing and projection.
 
-            cm.implement(Mapper.class).implement(Cloneable.class);
+            cm.implement(Mapper.class);
 
-            MethodMaker mm = cm.addMethod
-                (Mapper.class, "initWrapper", Mapper.class, Object[].class).public_().varargs();
+            MethodMaker mm = cm.addConstructor(Mapper.class, Object[].class).private_().varargs();
+            mm.invokeSuperConstructor();
 
-            cm.addField(Mapper.class, "mapper").private_();
+            cm.addField(Mapper.class, "mapper").private_().final_();
             mm.field("mapper").set(mm.param(0));
 
             if (targetRemainder != TrueFilter.THE) {
@@ -805,8 +786,6 @@ public abstract class MappedTable<S, T> implements Table<T> {
                     .predicateHandle(targetType, targetRemainder.toString());
                 mm.field("predicate").set(mm.invoke(mh, mm.param(1)));
             }
-
-            mm.return_(mm.this_());
 
             mm = cm.addMethod(Object.class, "map", Object.class, Object.class).public_();
 
@@ -828,7 +807,8 @@ public abstract class MappedTable<S, T> implements Table<T> {
             Map<String, ColumnInfo> projection = targetQuery.projection();
 
             if (projection != null) {
-                unset(targetInfo, targetRowVar.cast(RowMaker.find(targetType)), projection);
+                TableMaker.unset
+                    (targetInfo, targetRowVar.cast(RowMaker.find(targetType)), projection);
             }
 
             done.here();
@@ -848,7 +828,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
             var tableVar = mm.param(0);
             var txnVar = mm.param(1);
             var targetRowVar = mm.param(2);
-            var argsVar = checker.prepareArgs(mm.param(3));
+            var argsVar = mm.param(3);
 
             if (which != 1 && sortPlan != null && sortPlan.sortOrder != null) {
                 // Use a WrappedUpdater around a sorted Scanner.
@@ -862,8 +842,7 @@ public abstract class MappedTable<S, T> implements Table<T> {
             var mapperVar = tableVar.invoke("mapper");
 
             if (targetRemainder != TrueFilter.THE || targetQuery.projection() != null) {
-                var wrapperVar = mm.invoke("clone").cast(ScannerFactory.class);
-                mapperVar.set(wrapperVar.invoke("initWrapper", mapperVar, argsVar));
+                mapperVar.set(mm.new_(cm, mapperVar, argsVar));
             }
 
             var sourceTableVar = tableVar.invoke("source");
@@ -934,17 +913,19 @@ public abstract class MappedTable<S, T> implements Table<T> {
             ready.here();
 
             var targetVar = mm.var(Class.class).set(targetType).invoke("getName");
-            var usingVar = tableVar.invoke("mapper").invoke("toString");
+            var mapperVar = tableVar.invoke("mapper");
+            var usingVar = mapperVar.invoke("toString");
 
-            planVar = mm.new_(QueryPlan.Mapper.class, targetVar, usingVar, planVar);
+            var mapperPlanVar = mm.new_(QueryPlan.Mapper.class, targetVar, usingVar, planVar);
+            planVar.set(mapperVar.invoke("plan", mapperPlanVar));
 
             if (targetRemainder != TrueFilter.THE) {
-                planVar = mm.new_(QueryPlan.Filter.class, targetRemainder.toString(), planVar);
+                planVar.set(mm.new_(QueryPlan.Filter.class, targetRemainder.toString(), planVar));
             }
 
             if (sortPlan != null && sortPlan.sortOrder != null) {
                 var columnsVar = mm.var(OrderBy.class).invoke("splitSpec", sortPlan.sortOrderSpec);
-                planVar = mm.new_(QueryPlan.Sort.class, columnsVar, planVar);
+                planVar.set(mm.new_(QueryPlan.Sort.class, columnsVar, planVar));
             }
 
             mm.return_(planVar);
@@ -971,9 +952,6 @@ public abstract class MappedTable<S, T> implements Table<T> {
 
         QueryPlan plan(boolean forUpdater, MappedTable<S, T> table, Transaction txn, Object... args)
             throws IOException;
-
-        // Only to be called if scanner has a predicate or projection applied to it.
-        Mapper<S, T> initWrapper(Mapper<S, T> mapper, Object... args);
     }
 
     /**

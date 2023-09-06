@@ -187,44 +187,56 @@ public interface MyRow {
 <div class="block">Returns true if a subset of rows from this table exists, as specified by the query
  expression.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="Table.html" title="type parameter in Table">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cloneRow(R)" class="member-name-link">cloneRow</a><wbr>(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cleanRow(R)" class="member-name-link">cleanRow</a><wbr>(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Sets columns which have a dirty state to clean.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="Table.html" title="type parameter in Table">R</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cloneRow(R)" class="member-name-link">cloneRow</a><wbr>(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns a new row instance which is an exact copy of the given row.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;<a href="Table.html" title="type parameter in Table">R</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#comparator(java.lang.String)" class="member-name-link">comparator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;spec)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Comparator.html" title="class or interface in java.util" class="external-link">Comparator</a>&lt;<a href="Table.html" title="type parameter in Table">R</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#comparator(java.lang.String)" class="member-name-link">comparator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;spec)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Returns a row comparator based on the given specification, which defines the ordering
  columns.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyRow(R,R)" class="member-name-link">copyRow</a><wbr>(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;from,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyRow(R,R)" class="member-name-link">copyRow</a><wbr>(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;from,
  <a href="Table.html" title="type parameter in Table">R</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Copies all columns and states from one row to another.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#delete(org.cojen.tupl.Transaction,R)" class="member-name-link">delete</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
- <a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Unconditionally removes an existing row by primary key.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Table.html" title="type parameter in Table">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#exchange(org.cojen.tupl.Transaction,R)" class="member-name-link">exchange</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#delete(org.cojen.tupl.Transaction,R)" class="member-name-link">delete</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
  <a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Unconditionally removes an existing row by primary key.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="Table.html" title="type parameter in Table">R</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#exchange(org.cojen.tupl.Transaction,R)" class="member-name-link">exchange</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
+ <a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Unconditionally stores the given row, potentially replacing a corresponding row which
  already exists.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#exists(org.cojen.tupl.Transaction,R)" class="member-name-link">exists</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#exists(org.cojen.tupl.Transaction,R)" class="member-name-link">exists</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
  <a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if a row exists by searching against the primary key.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="Table.html" title="interface in org.cojen.tupl">Table</a>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#group(java.lang.Class,java.util.function.Supplier)" class="member-name-link">group</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;targetType,
+ <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="Grouper.html" title="interface in org.cojen.tupl">Grouper</a>&lt;<a href="Table.html" title="type parameter in Table">R</a>,<wbr>T&gt;&gt;&nbsp;supplier)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns a view backed by this table, consisting of aggregate rows, which are grouped by
+ the <a href="PrimaryKey.html" title="annotation interface in org.cojen.tupl"><code>primary key</code></a> of the target type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#insert(org.cojen.tupl.Transaction,R)" class="member-name-link">insert</a><wbr>(<a href="Transaction.html" title="interface in org.cojen.tupl">Transaction</a>&nbsp;txn,
@@ -412,6 +424,13 @@ public interface MyRow {
 <h3 id="unsetRow(java.lang.Object)">unsetRow</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">unsetRow</span><wbr><span class="parameters">(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</span></div>
 <div class="block">Resets the state of the given row such that all columns are unset.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="cleanRow(R)">
+<h3 id="cleanRow(java.lang.Object)">cleanRow</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">cleanRow</span><wbr><span class="parameters">(<a href="Table.html" title="type parameter in Table">R</a>&nbsp;row)</span></div>
+<div class="block">Sets columns which have a dirty state to clean. All unset columns remain unset.</div>
 </section>
 </li>
 <li>
@@ -812,7 +831,27 @@ public interface MyRow {
  against rows not supported by the mapper, and closing the table has no effect.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if the given mapper is null</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if any parameter is null</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="group(java.lang.Class,java.util.function.Supplier)">
+<h3>group</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="Table.html" title="interface in org.cojen.tupl">Table</a>&lt;T&gt;</span>&nbsp;<span class="element-name">group</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;targetType,
+ <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;<a href="Grouper.html" title="interface in org.cojen.tupl">Grouper</a>&lt;<a href="Table.html" title="type parameter in Table">R</a>,<wbr>T&gt;&gt;&nbsp;supplier)</span></div>
+<div class="block">Returns a view backed by this table, consisting of aggregate rows, which are grouped by
+ the <a href="PrimaryKey.html" title="annotation interface in org.cojen.tupl"><code>primary key</code></a> of the target type. The primary key columns must
+ exactly correspond to columns of this source table. If no primary key is defined, then
+ the resulting table has one row, which is the aggregate result of all the rows of this
+ table. The view returned by this method is unmodifiable, and closing it has no effect.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>supplier</code> - is called to generate a new <a href="Grouper.html" title="interface in org.cojen.tupl"><code>Grouper</code></a> instance for every query
+ against the returned table</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if any parameter is null</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if target primary key is malformed</dd>
 </dl>
 </section>
 </li>
@@ -822,13 +861,36 @@ public interface MyRow {
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="type-parameters">&lt;J&gt;</span>&nbsp;<span class="return-type"><a href="Table.html" title="interface in org.cojen.tupl">Table</a>&lt;J&gt;</span>&nbsp;<span class="element-name">join</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;J&gt;&nbsp;joinType,
  <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;spec,
  <a href="Table.html" title="interface in org.cojen.tupl">Table</a>&lt;?&gt;...&nbsp;tables)</span></div>
-<div class="block">Joins tables together into an unmodifiable view. The view doesn't have any primary key,
- and so operations which act upon one aren't supported. In addition, closing the view
- doesn't have any effect.
+<div class="block">Joins tables together into an unmodifiable view. The returned view doesn't have any
+ primary key, and so operations which act upon one aren't supported. In addition, closing
+ the view doesn't have any effect.
 
  <p>The <code>joinType</code> parameter is a class which resembles an ordinary row definition
- except that all columns must refer to other row types. Annotations for defining keys and
- indexes is unsupported.</div>
+ except that all columns must refer to other row types. Any annotations which define keys
+ and indexes are ignored.
+
+ <p>The join specification consists of each join column, separated by a join operator,
+ and possibly grouped with parenthesis:
+
+ <blockquote><pre><code>
+ JoinOp = Source { Type Source }
+ Source = Column | Group
+ Group  = "(" JoinOp ")"
+ Column = string
+ Type   = ":" | "&gt;:" | ":&lt;" | "&gt;:&lt;" | "&gt;" | "&lt;" | "&gt;&lt;"
+
+ a : b    inner join
+ a &gt;: b   left outer join
+ a :&lt; b   right outer join
+ a &gt;:&lt; b  full outer join
+ a &gt; b    left anti join
+ a &lt; b    right anti join
+ a &gt;&lt; b   full anti join
+ </code></pre></blockquote>
+
+ <p>In order for a requested join type to work correctly, a suitable join filter must be
+ provided by a query. Scanning all rows of the table without a join filter results in a
+ <em>cross join</em>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>spec</code> - join specification</dd>
@@ -836,6 +898,12 @@ public interface MyRow {
 <dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if any parameters are null</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if join type is malformed, or if the specification is
  malformed, or if there are any table matching issues</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="Database.html#openJoinTable(java.lang.Class,java.lang.String)"><code>Database.openJoinTable(java.lang.Class&lt;J&gt;, java.lang.String)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>

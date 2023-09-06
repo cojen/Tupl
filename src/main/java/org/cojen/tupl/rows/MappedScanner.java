@@ -43,17 +43,26 @@ public class MappedScanner<S, T> implements Scanner<T> {
         mSource = source;
         mMapper = mapper;
 
-        S sourceRow = source.row();
+        try {
+            S sourceRow = source.row();
 
-        if (sourceRow != null) {
-            targetRow = prepareTargetRow(targetRow);
-            T mappedTargetRow = mMapper.map(sourceRow, targetRow);
-            if (mappedTargetRow != null) {
-                mMappedTable.markAllUndirty(mappedTargetRow);
-                mTargetRow = mappedTargetRow;
-            } else {
-                step(targetRow);
+            if (sourceRow != null) {
+                targetRow = prepareTargetRow(targetRow);
+                T mappedTargetRow = mMapper.map(sourceRow, targetRow);
+                if (mappedTargetRow != null) {
+                    mMappedTable.cleanRow(mappedTargetRow);
+                    mTargetRow = mappedTargetRow;
+                } else {
+                    step(targetRow);
+                }
             }
+        } catch (Throwable e) {
+            try {
+                close();
+            } catch (Throwable e2) {
+                RowUtils.suppress(e, e2);
+            }
+            throw e;
         }
     }
 
@@ -64,22 +73,31 @@ public class MappedScanner<S, T> implements Scanner<T> {
 
     @Override
     public final T step(T targetRow) throws IOException {
-        Scanner<S> source = mSource;
-        S sourceRow = source.row();
+        try {
+            Scanner<S> source = mSource;
+            S sourceRow = source.row();
 
-        while (true) {
-            sourceRow = source.step(sourceRow);
-            if (sourceRow == null) {
-                mTargetRow = null;
-                return null;
+            while (true) {
+                sourceRow = source.step(sourceRow);
+                if (sourceRow == null) {
+                    mTargetRow = null;
+                    return null;
+                }
+                targetRow = prepareTargetRow(targetRow);
+                T mappedTargetRow = mMapper.map(sourceRow, targetRow);
+                if (mappedTargetRow != null) {
+                    mMappedTable.cleanRow(mappedTargetRow);
+                    mTargetRow = mappedTargetRow;
+                    return mappedTargetRow;
+                }
             }
-            targetRow = prepareTargetRow(targetRow);
-            T mappedTargetRow = mMapper.map(sourceRow, targetRow);
-            if (mappedTargetRow != null) {
-                mMappedTable.markAllUndirty(mappedTargetRow);
-                mTargetRow = mappedTargetRow;
-                return mappedTargetRow;
+        } catch (Throwable e) {
+            try {
+                close();
+            } catch (Throwable e2) {
+                RowUtils.suppress(e, e2);
             }
+            throw e;
         }
     }
 

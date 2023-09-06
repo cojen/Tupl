@@ -425,7 +425,7 @@ public abstract class ClientTableHelper<R> implements Table<R> {
         resultVar.ifEq(0, noOperation);
 
         if (variant == "update") {
-            TableMaker.markAllUndirty(rowVar, rowGen.info);
+            mm.invoke("cleanRow", rowVar);
         } else {
             decodeValueColumns(rowGen, rowVar, pipeVar);
             TableMaker.markAllClean(rowVar, rowGen, rowGen);

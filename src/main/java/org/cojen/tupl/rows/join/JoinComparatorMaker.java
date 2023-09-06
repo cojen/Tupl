@@ -31,6 +31,7 @@ import org.cojen.tupl.core.Pair;
 import org.cojen.tupl.rows.ComparatorMaker;
 import org.cojen.tupl.rows.OrderBy;
 import org.cojen.tupl.rows.RowGen;
+import org.cojen.tupl.rows.RowInfo;
 import org.cojen.tupl.rows.RowUtils;
 import org.cojen.tupl.rows.WeakCache;
 
@@ -66,12 +67,12 @@ final class JoinComparatorMaker<J> {
     }
 
     private final Class<J> mJoinType;
-    private final JoinRowInfo mJoinInfo;
+    private final RowInfo mJoinInfo;
     private final OrderBy mOrderBy;
 
     private JoinComparatorMaker(Class<J> rowType, String spec) {
         mJoinType = rowType;
-        mJoinInfo = JoinRowInfo.find(rowType);
+        mJoinInfo = RowInfo.find(rowType);
         mOrderBy = OrderBy.forSpec(mJoinInfo.allColumns, spec);
     }
 

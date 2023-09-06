@@ -147,7 +147,7 @@ public final class Parser extends SimpleParser {
                         if (excluded == null) {
                             excluded = new HashMap<>();
                         }
-                        column.putScalarColumns(excluded);
+                        column.gatherScalarColumns(excluded);
                     } else {
                         if (excluded != null && excluded.containsKey(name)) {
                             mPos = colStart;
@@ -199,7 +199,7 @@ public final class Parser extends SimpleParser {
                 projection = null;
             } else {
                 for (ColumnInfo info : availableColumns.values()) {
-                    info.putScalarColumns(projection);
+                    info.gatherScalarColumns(projection);
                 }
                 if (!projection.keySet().removeAll(excluded.keySet())) {
                     // Nothing was actually excluded, and so all columns are projected.

@@ -241,19 +241,21 @@ public final class ComparatorMaker<R> {
      */
     private static Variable columnValue(OrderBy.Rule rule, Variable rowVar, Label isNull) {
         ColumnInfo ci = rule.column();
-        if (ci.isScalarType()) {
+        String prefix = ci.prefix();
+
+        if (prefix == null && ci.isScalarType()) {
             // Prefer accessing the field because the method can throw UnsetColumnException.
             return rowVar.field(ci.name);
         }
 
         while (true) {
-            String prefix = ci.prefix();
             if (prefix == null) {
                 return rowVar.invoke(ci.name);
             }
             rowVar = rowVar.invoke(prefix);
             rowVar.ifEq(null, isNull);
             ci = ci.tail();
+            prefix = ci.prefix();
         }
     }
 }

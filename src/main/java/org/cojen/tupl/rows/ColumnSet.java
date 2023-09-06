@@ -28,14 +28,14 @@ import java.util.NavigableMap;
  * @author Brian S O'Neill
  */
 public class ColumnSet {
-    // Map is ordered lexicographically by name.
-    public NavigableMap<String, ColumnInfo> allColumns;
-
-    // Map is ordered lexicographically by name and excludes key columns.
-    NavigableMap<String, ColumnInfo> valueColumns;
-
     // Map order matches declaration order and excludes value columns.
     public Map<String, ColumnInfo> keyColumns;
+
+    // Map is ordered lexicographically by name and excludes key columns.
+    public NavigableMap<String, ColumnInfo> valueColumns;
+
+    // Map is ordered lexicographically by name.
+    public NavigableMap<String, ColumnInfo> allColumns;
 
     /**
      * Compares all columns for equality based on their natural order.
