@@ -60,6 +60,7 @@ final class PosixFileIO extends AbstractFileIO {
     private static final MethodHandle mmap;
     private static final MethodHandle msync;
     private static final MethodHandle munmap;
+    private static final MethodHandle posix_madvise;
 
     static {
         Linker linker = Linker.nativeLinker();
@@ -170,6 +171,15 @@ final class PosixFileIO extends AbstractFileIO {
              (ValueLayout.JAVA_INT,
               ValueLayout.JAVA_LONG, // addr
               ValueLayout.JAVA_LONG) // length
+             );
+
+        posix_madvise = linker.downcallHandle
+            (lookup.find("posix_madvise").get(),
+             FunctionDescriptor.of
+             (ValueLayout.JAVA_INT,
+              ValueLayout.JAVA_LONG, // addr
+              ValueLayout.JAVA_LONG, // length
+              ValueLayout.JAVA_INT)  // advice
              );
 
         // Invoke this early in case additional classes need to be loaded. The error is
@@ -682,6 +692,18 @@ final class PosixFileIO extends AbstractFileIO {
         }
         if (result == -1) {
             throw lastErrorToException();
+        }
+    }
+
+    static void madvisePtr(long ptr, long length, int advice) throws IOException {
+        int result;
+        try {
+            result = (int) posix_madvise.invokeExact(ptr, length, advice);
+        } catch (Throwable e) {
+            throw Utils.rethrow(e);
+        }
+        if (result != 0) {
+            throw new IOException(errorMessage(result));
         }
     }
 
