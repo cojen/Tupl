@@ -963,7 +963,7 @@ public class BTreeCursor extends CoreValueAccessor implements Cursor {
                 int childCount;
 
                 obtainCount: {
-                    childCount = node.retrieveChildEntryCount(frame.mNodePos);
+                    childCount = node.childEntryCount(frame.mNodePos);
 
                     if (childCount >= 0) {
                         if (amount >= childCount) {
@@ -1118,7 +1118,7 @@ public class BTreeCursor extends CoreValueAccessor implements Cursor {
                 }
             }
 
-            int childCount = node.retrieveChildEntryCount(frame.mNodePos);
+            int childCount = node.childEntryCount(frame.mNodePos);
 
             if (childCount >= 0) {
                 count += childCount;
@@ -1586,7 +1586,7 @@ public class BTreeCursor extends CoreValueAccessor implements Cursor {
                 int childCount;
 
                 obtainCount: {
-                    childCount = node.retrieveChildEntryCount(frame.mNodePos);
+                    childCount = node.childEntryCount(frame.mNodePos);
 
                     if (childCount >= 0) {
                         if (amount >= childCount) {
@@ -2521,7 +2521,7 @@ public class BTreeCursor extends CoreValueAccessor implements Cursor {
                     return endKey;
                 }
 
-                long childId = node.retrieveChildRefId(pos);
+                long childId = node.childId(pos);
                 Node child = mTree.mDatabase.nodeMapGet(childId);
 
                 if (child != null) { 
@@ -2547,7 +2547,7 @@ public class BTreeCursor extends CoreValueAccessor implements Cursor {
                             int highestInternalPos = node.highestInternalPos();
                             int highestKeyPos = node.highestKeyPos();
                             for (; spos <= highestInternalPos; spos += 2) {
-                                childId = node.retrieveChildRefId(spos);
+                                childId = node.childId(spos);
                                 child = mTree.mDatabase.nodeMapGet(childId);
                                 if (child == null) { // node is not cached
                                     pos = spos;

@@ -69,13 +69,11 @@ import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
 
 import org.cojen.tupl.CacheExhaustedException;
-import org.cojen.tupl.ClosedIndexException;
 import org.cojen.tupl.ConfirmationInterruptedException;
 import org.cojen.tupl.CorruptDatabaseException;
 import org.cojen.tupl.Cursor;
 import org.cojen.tupl.DatabaseException;
 import org.cojen.tupl.DatabaseFullException;
-import org.cojen.tupl.DeletedIndexException;
 import org.cojen.tupl.DurabilityMode;
 import org.cojen.tupl.Index;
 import org.cojen.tupl.LargeKeyException;
@@ -4713,7 +4711,7 @@ final class LocalDatabase extends CoreDatabase {
      * @return child node, possibly split
      */
     final Node latchChild(Node parent, int childPos, int option) throws IOException {
-        long childId = parent.retrieveChildRefId(childPos);
+        long childId = parent.childId(childPos);
         Node childNode = nodeMapGetShared(childId);
 
         tryFind: if (childNode != null) {
@@ -4790,7 +4788,7 @@ final class LocalDatabase extends CoreDatabase {
     final Node latchChildRetainParentEx(Node parent, int childPos, boolean required)
         throws IOException
     {
-        long childId = parent.retrieveChildRefId(childPos);
+        long childId = parent.childId(childPos);
 
         Node childNode;
         while (true) {

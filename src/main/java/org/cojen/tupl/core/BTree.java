@@ -232,7 +232,7 @@ class BTree extends Tree implements View, Index {
                 throw e;
             }
 
-            long childId = node.retrieveChildRefId(childPos);
+            long childId = node.childId(childPos);
             Node childNode = mDatabase.nodeMapGetShared(childId);
 
             if (childNode != null) {
@@ -455,7 +455,7 @@ class BTree extends Tree implements View, Index {
                 throw e;
             }
 
-            long childId = node.retrieveChildRefId(childPos);
+            long childId = node.childId(childPos);
             Node childNode = mDatabase.nodeMapGetShared(childId);
 
             if (childNode != null) {
@@ -1331,7 +1331,7 @@ class BTree extends Tree implements View, Index {
                     if (pos > highestPos) {
                         break toLower;
                     }
-                    long childId = node.retrieveChildRefId(pos);
+                    long childId = node.childId(pos);
                     Node child = mDatabase.nodeMapGetShared(childId);
                     if (child != null) {
                         try {

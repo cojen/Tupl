@@ -62,7 +62,7 @@ final class Node extends Clutch implements DatabaseAccess {
       bits 3..1: sub type     for leaf: x0x (normal)
                               for internal: x1x (6 byte child pointer + 2 byte count), x0x (unused)
                               for both: bit 1 is set if low extremity, bit 3 for high extremity
-      bit  0:    endianness   0 (little), 1 (big)
+      bit  0:    unused       0
 
       TN == Tree Node
 
@@ -602,7 +602,7 @@ final class Node extends Clutch implements DatabaseAccess {
      * @return null or child node, never split
      */
     private Node tryLatchChildNotSplit(int childPos) throws IOException {
-        final long childId = retrieveChildRefId(childPos);
+        final long childId = childId(childPos);
         final LocalDatabase db = getDatabase();
         Node childNode = db.nodeMapGet(childId);
 
@@ -923,7 +923,7 @@ final class Node extends Clutch implements DatabaseAccess {
         int childPtr = searchVecEnd() + 2;
         final int highestPtr = childPtr + (highestInternalPos() << 2);
         for (; childPtr <= highestPtr; childPtr += 8) {
-            long childId = p_uint48GetLE(mPage, childPtr);
+            long childId = childIdByOffset(mPage, childPtr);
             Node child = db.nodeMapGetExclusive(childId);
             if (child != null) {
                 try {
@@ -2182,8 +2182,15 @@ final class Node extends Clutch implements DatabaseAccess {
     /**
      * @param pos position as provided by binarySearch; must be positive
      */
-    long retrieveChildRefId(int pos) {
-        return p_uint48GetLE(mPage, searchVecEnd() + 2 + (pos << 2));
+    long childId(int pos) {
+        return childIdByOffset(mPage, searchVecEnd() + 2 + (pos << 2));
+    }
+
+    /**
+     * @param offset page offset
+     */
+    private static long childIdByOffset(/*P*/ byte[] page, int offset) {
+        return p_longGetLE(page, offset) & 0xffff_ffff_ffffL;
     }
 
     /**
@@ -2193,7 +2200,7 @@ final class Node extends Clutch implements DatabaseAccess {
      *
      * @param pos position as provided by binarySearch; must be positive
      */
-    int retrieveChildEntryCount(int pos) {
+    int childEntryCount(int pos) {
         return p_ushortGetLE(mPage, searchVecEnd() + (2 + 6) + (pos << 2)) - 1;
     }
 
@@ -6227,7 +6234,7 @@ final class Node extends Clutch implements DatabaseAccess {
             var childIds = new LHashTable.Int(512);
 
             for (int i = childIdsStart; i < childIdsEnd; i += 8) {
-                long childId = p_uint48GetLE(page, i);
+                long childId = childIdByOffset(page, i);
                 if (id() > 1 && childId <= 1) { // stubs don't have a valid child id
                     return verifyFailed(level, observer, "Illegal child id: " + childId);
                 }
