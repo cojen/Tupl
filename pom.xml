@@ -186,7 +186,7 @@
         <configuration>
           <detectJavaApiLink>true</detectJavaApiLink>
           <links>
-            <link>https://docs.oracle.com/en/java/javase/26/docs/api</link>
+            <link>https://docs.oracle.com/en/java/javase/27/docs/api</link>
           </links>
           <author>false</author>
           <nodeprecatedlist>true</nodeprecatedlist>
